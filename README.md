@@ -3,7 +3,8 @@
 starting from scratch, hopefully with tests
 
 TODO:
-    1. directory structure
-    2. pytest(s)
+1. directory structure
+    1. pytest(s)
+    2. models
 
 
