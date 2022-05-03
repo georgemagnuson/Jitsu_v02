@@ -3,9 +3,9 @@
 Author : georgemagnuson@gmail.com
 Date   : 2021-09-29
 Purpose: create a gmail dataclass
-            that reads from and writes to gmail
+            that reads from gmail and writes to postgresql database
+Returns:
 """
-
 import base64
 import os
 import pickle
@@ -15,16 +15,17 @@ from datetime import datetime
 from email import message_from_bytes, policy
 
 # GMail API
-# pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+# pip install --upgrade google-api-python-client google-auth-httplib2
+# google-auth-oauthlib
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from rich.console import Console
 from rich.progress import Progress
 
-# import pg8000
+import pg8000
 
-# import message_v01
+import message_v01
 
 
 @dataclass
@@ -79,29 +80,29 @@ class GMailMessage:
         #                 self.attachment_raw = multipart.get_payload()
         return
 
-    # def save_message_to_postgresql(self):
-    #     console = Console()
-    #     if message_v01.select_first_message(self.message_id):
-    #         console.log(f"[bright_yellow]WARNING: message id [white]{self.message_id}[/white] already exists.")
-    #     else:
-    #         message_v01.create_message(self.message_id, self.message_date, self.message_from, self.message_to, self.message_subject, self.message_has_attachment, self.message_raw)
-    #
-    #     # console.log('adding SupplierMail/InvoicesProcessed label')
-    #     # SupplierMail/InvoicesProcessed
-    #     # self.message_label_add("Label_6569528190372695776")
-    #     # console.log('removing SupplierMail/InvoicesNew label')
-    #     # SupplierMail/InvoicesNew
-    #     # self.message_label_remove("Label_6976860208836301729")
-    #     # except (Exception, pg8000.DatabaseError) as error:
-    #     #     console.log(f"[bold red]ERROR:{error}[/bold red]")
-    #     # logger.error("error: {error_message}", error_message=error)
-    #     # sql_console.rule("[bold red]ERROR")
-    #     # sql_console.print(error)
-    #     # finally:
-    #     #     if sql_connection is not None:
-    #     #         sql_connection.close()
-    #             # console.log("Database connection closed.")
-    #     return
+    def save_message_to_postgresql(self):
+        console = Console()
+        if message_v01.select_first_message(self.message_id):
+            console.log(f"[bright_yellow]WARNING: message id [white]{self.message_id}[/white] already exists.")
+        else:
+            message_v01.create_message(self.message_id, self.message_date, self.message_from, self.message_to, self.message_subject, self.message_has_attachment, self.message_raw)
+
+        # console.log('adding SupplierMail/InvoicesProcessed label')
+        # SupplierMail/InvoicesProcessed
+        # self.message_label_add("Label_6569528190372695776")
+        # console.log('removing SupplierMail/InvoicesNew label')
+        # SupplierMail/InvoicesNew
+        # self.message_label_remove("Label_6976860208836301729")
+        # except (Exception, pg8000.DatabaseError) as error:
+        #     console.log(f"[bold red]ERROR:{error}[/bold red]")
+        # logger.error("error: {error_message}", error_message=error)
+        # sql_console.rule("[bold red]ERROR")
+        # sql_console.print(error)
+        # finally:
+        #     if sql_connection is not None:
+        #         sql_connection.close()
+                # console.log("Database connection closed.")
+        return
 
     def get_message_full(self):
         """gets one specific message, full format, as given by message_id_arg"""

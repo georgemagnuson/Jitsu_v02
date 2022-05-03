@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Author : Me <me@foo.com>
-Date   : today
+Author : George Magnuson <georgemagnuson@gmail.com>
+Date   : 2022 05 02
 Purpose: Rock the Casbah
 """
 
