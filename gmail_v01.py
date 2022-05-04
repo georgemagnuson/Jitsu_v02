@@ -8,7 +8,10 @@ Purpose: try out jeremyephron/simplegmail
 import argparse
 from simplegmail import Gmail
 import rich
+
+
 # --------------------------------------------------
+# from simplegmail.simplegmail.label import Label
 
 
 def get_args():
@@ -29,7 +32,6 @@ def get_args():
                         type=str,
                         default='')
 
-
     return parser.parse_args()
 
 
@@ -47,23 +49,37 @@ def main():
     gmail = Gmail()
 
     # Unread messages in your inbox
-    messages = gmail.get_unread_inbox()
-    rich.inspect(messages)
+    # messages = gmail.get_unread_inbox()
+    # id = 'Label_6976860208836301729'                                         │
+    # name = 'SupplierMail/InvoicesNew'
+
+    # Unread messages in inbox with label "SupplierMail/InvoicesNew"
+    labels = gmail.list_labels()
+    invoicesNew_label = list(filter(lambda x: x.name == 'SupplierMail/InvoicesNew', labels))[0]
+
+    messages = gmail.get_unread_inbox(labels=[invoicesNew_label])
+    for message in messages:
+        rich.inspect(message)
+
     # Starred messages
     # messages = gmail.get_starred_messages()
 
-    # ...and many more easy to use functions can be found in gmail.py!
+    # labels = gmail.list_labels()
+    # rich.inspect(labels)
+    # for label in labels:
+    #    rich.inspect(label)
 
     # Print them out!
-    for message in messages:
-        rich.inspect(message)
-        print("To: " + message.recipient)
-        print("From: " + message.sender)
-        print("Subject: " + message.subject)
-        print("Date: " + message.date)
-        print("Preview: " + message.snippet)
+    # for message in messages:
+    #     rich.inspect(message)
+    #     print("To: " + message.recipient)
+    #     print("From: " + message.sender)
+    #     print("Subject: " + message.subject)
+    #     print("Date: " + message.date)
+    #     print("Preview: " + message.snippet)
+    #
+    #     print("Message Body: " + message.plain)  # or message.html
 
-        print("Message Body: " + message.plain)  # or message.html
 
 # --------------------------------------------------
 if __name__ == '__main__':
