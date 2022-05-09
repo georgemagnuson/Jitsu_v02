@@ -8,10 +8,8 @@ Purpose: try out jeremyephron/simplegmail
 import argparse
 from simplegmail import Gmail
 import rich
-
-
-# --------------------------------------------------
-# from simplegmail.simplegmail.label import Label
+from rich import print
+from rich.console import Console
 
 
 def get_args():
@@ -45,22 +43,42 @@ def main():
 
     # print(f'username = "{username}"')
     # print(f'password = "{password}"')
-
+    console = Console()
     gmail = Gmail()
 
     # Unread messages in your inbox
     # messages = gmail.get_unread_inbox()
-    # id = 'Label_6976860208836301729'                                         │
+    # id = 'Label_6976860208836301729'
     # name = 'SupplierMail/InvoicesNew'
 
     # Unread messages in inbox with label "SupplierMail/InvoicesNew"
     labels = gmail.list_labels()
     invoicesNew_label = list(filter(lambda x: x.name == 'SupplierMail/InvoicesNew', labels))[0]
+    # rich.inspect(invoicesNew_label)
 
     messages = gmail.get_unread_inbox(labels=[invoicesNew_label])
+    print(f'[blue]{invoicesNew_label.name}[/blue] message count: [bold red]{len(messages)}[/bold red]')
     for message in messages:
-        rich.inspect(message)
+        # rich.inspect(message)
+        console.rule()
+        print('[grey]grey[/]')
+        print('[white]white[/]')
+        print('[bright white]bright white[/]')
+        print('[silver]silver[/]')
+        print('[blue]blue [/][bright blue]bright blue [/][salmon]salmon[/]')
+        print(f'[maroon]maroon[/]')
+        print(f'[orange]orange[/]')
+        print(f'[green]green[/]')
 
+        print(f'[white]To        : [bright_white]{message.recipient}[/]')
+        print(f'[bright_black]From      : [bright_white]{message.sender}[/]')
+        print(f'[white]Date      : [bright_white]{message.date}[/]')
+        print(f'[white]Subject   : [bright_white]{message.subject}[/]')
+        print(f'[white]Snippet   : [bright_white]{message.snippet}[/]')
+        print(f'[white]Attachment: [bright_white]{message.attachments}[/]')
+        if message.attachments:
+            for attachment in message.attachments:
+                print(f'[white]\tFile Name: [bright_white]{attachment.filename}[/]')
     # Starred messages
     # messages = gmail.get_starred_messages()
 
