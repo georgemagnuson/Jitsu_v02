@@ -16,19 +16,15 @@ def get_args():
     """Get command-line arguments"""
 
     parser = argparse.ArgumentParser(
-        description='try out jeremyephron/simplemail',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        description="try out jeremyephron/simplemail",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-    parser.add_argument('positional',
-                        metavar='str',
-                        help='username')
+    parser.add_argument("positional", metavar="str", help="username")
 
-    parser.add_argument('-p',
-                        '--password',
-                        help='password',
-                        metavar='str',
-                        type=str,
-                        default='')
+    parser.add_argument(
+        "-p", "--password", help="password", metavar="str", type=str, default=""
+    )
 
     return parser.parse_args()
 
@@ -53,52 +49,35 @@ def main():
 
     # Unread messages in inbox with label "SupplierMail/InvoicesNew"
     labels = gmail.list_labels()
-    invoicesNew_label = list(filter(lambda x: x.name == 'SupplierMail/InvoicesNew', labels))[0]
+    invoicesNew_label = list(
+        filter(lambda x: x.name == "SupplierMail/InvoicesNew", labels)
+    )[0]
     # rich.inspect(invoicesNew_label)
 
     messages = gmail.get_unread_inbox(labels=[invoicesNew_label])
-    print(f'[blue]{invoicesNew_label.name}[/blue] message count: [bold red]{len(messages)}[/bold red]')
+    print(
+        f"[blue]{invoicesNew_label.name}[/blue] message count: [bold red]{len(messages)}[/bold red]"
+    )
     for message in messages:
         # rich.inspect(message)
         console.rule()
-        print('[grey]grey[/]')
-        print('[white]white[/]')
-        print('[bright white]bright white[/]')
-        print('[silver]silver[/]')
-        print('[blue]blue [/][bright blue]bright blue [/][salmon]salmon[/]')
-        print(f'[maroon]maroon[/]')
-        print(f'[orange]orange[/]')
-        print(f'[green]green[/]')
 
-        print(f'[white]To        : [bright_white]{message.recipient}[/]')
-        print(f'[bright_black]From      : [bright_white]{message.sender}[/]')
-        print(f'[white]Date      : [bright_white]{message.date}[/]')
-        print(f'[white]Subject   : [bright_white]{message.subject}[/]')
-        print(f'[white]Snippet   : [bright_white]{message.snippet}[/]')
-        print(f'[white]Attachment: [bright_white]{message.attachments}[/]')
+        print(f"[white]To        : [bright_white]{message.recipient}[/]")
+        print(f"[bright_black]From      : [bright_white]{message.sender}[/]")
+        print(f"[white]Date      : [bright_white]{message.date}[/]")
+        print(f"[white]Subject   : [bright_white]{message.subject}[/]")
+        print(f"[white]Snippet   : [bright_white]{message.snippet}[/]")
+        print(f"[white]Attachment: [bright_white]{message.attachments}[/]")
         if message.attachments:
             for attachment in message.attachments:
-                print(f'[white]\tFile Name: [bright_white]{attachment.filename}[/]')
-    # Starred messages
-    # messages = gmail.get_starred_messages()
+                print(f"[white]\tFile Name: [bright_white]{attachment.filename}[/]")
 
     # labels = gmail.list_labels()
     # rich.inspect(labels)
     # for label in labels:
     #    rich.inspect(label)
 
-    # Print them out!
-    # for message in messages:
-    #     rich.inspect(message)
-    #     print("To: " + message.recipient)
-    #     print("From: " + message.sender)
-    #     print("Subject: " + message.subject)
-    #     print("Date: " + message.date)
-    #     print("Preview: " + message.snippet)
-    #
-    #     print("Message Body: " + message.plain)  # or message.html
-
 
 # --------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
