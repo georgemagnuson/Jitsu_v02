@@ -6,10 +6,13 @@ Purpose: try out jeremyephron/simplegmail
 """
 
 import argparse
-from simplegmail import Gmail
+
 import rich
 from rich import print
 from rich.console import Console
+
+import twitter_v02
+from simplegmail import Gmail
 
 
 def get_args():
@@ -55,6 +58,11 @@ def main():
     # rich.inspect(invoicesNew_label)
 
     messages = gmail.get_unread_inbox(labels=[invoicesNew_label])
+    if len(messages) > 0:
+        tweet: str = f"gmail: {len(messages)} message"
+        if len(messages) > 1:
+            tweet = tweet + "s"
+        twitter_v02.send_a_DM(message=tweet)
     print(
         f"[blue]{invoicesNew_label.name}[/blue] message count: [bold red]{len(messages)}[/bold red]"
     )

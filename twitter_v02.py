@@ -42,14 +42,16 @@ def create_connection():
     return auth
 
 
-def send_a_DM(api, user_id='18240468', message="test DM"):
-    # user_id="18240468"
-    # auth = create_connection()
-    # api = tweepy.API(auth)
-    # print(api.verify_credentials().screen_name)
-    # api_list = api.get_lists()
-    # rich.inspect(api_list)
-    api.send_direct_message(recipient_id=user_id, text=message)
+def send_a_DM(recipient_id='18240468', message="test DM"):
+    dt = datetime.now()
+    ts = str(dt.year)[-2:] + ("0" + str(dt.month))[-2:] + ("0" + str(dt.day))[-2:] + ("0" + str(dt.hour))[-2:] + ("0" + str(dt.minute))[-2:]
+
+    message = message.strip()[-69:] + '@' + ts
+
+    auth = create_connection()
+    api = tweepy.API(auth)
+
+    api.send_direct_message(recipient_id=recipient_id, text=message)
     return
 
 
@@ -90,29 +92,11 @@ def get_args():
 
 
 def main():
-    dt = datetime.now()
-    # rich.inspect(dt)
     args = get_args()
-    # print(dt)
-    ts = str(dt.year)[-2:] + ("0" + str(dt.month))[-2:] + ("0" + str(dt.day))[-2:] + ("0" + str(dt.hour))[-2:] + ("0" + str(dt.minute))[-2:]
-    # print(ts)
-
-    message_arg = args.message.strip()[-69:] + ':' + ts
-    # print(message_arg)
-
-    # Getting the current date and time
+    message_arg = args.message.strip()
     id_arg = args.id.strip()
-    # print(f'message_arg = "{message_arg}"')
-    # print(f'id_arg = "{id_arg}"')
 
-    auth = create_connection()
-    api = tweepy.API(auth)
-    # print(api.verify_credentials().screen_name)
-    # get_user_info(api, id_arg)
-
-    # send_a_DM(api, id_arg, message_arg)
-    api.send_direct_message(recipient_id=id_arg, text=message_arg)
-
+    send_a_DM(id_arg, message_arg)
 
 # --------------------------------------------------
 if __name__ == "__main__":
