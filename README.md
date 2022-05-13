@@ -8,16 +8,18 @@ TODO:
     2. models
 2. steps
     1. check for new mail in [Supplier/InvoicesNew] folder
-    2. download new mail as Raw
-    3. extract email data that will be entered in database
-        1. supplier
-        2. date
-        3. raw email
-    4. upload data to postgresql database
-    5. on sucessful extraction and upload move the email out of [Supplier/InvoiceNew] to [Supplier/Invoice???]
-    6. convert raw email to invoice/s
+    2. for each new message
+        1. download new mail as Raw
+        2. extract email data that will be entered in database
+            1. supplier
+            2. date
+            3. raw email
+        3. upload data to postgresql database
+        4. on successful extraction and upload move the email out of [Supplier/InvoiceNew] to [Supplier/InvoiceProcessed]
+        5. on failed extraction or upload notify admin
+    3. convert raw email to invoice/s
         1. formats:
-            1. pdf (mose suppliers)
+            1. pdf (most suppliers)
             2. html (coca-cola)
             3. csv (BidFood)
         2. extract data in pdf, html, csv into usable information using invoice2data

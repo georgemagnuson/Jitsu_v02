@@ -1,6 +1,7 @@
 import base64
 import os
 import uuid
+from configparser import ConfigParser
 from datetime import date
 from email import message_from_bytes, policy
 from os.path import exists
@@ -10,14 +11,34 @@ import pydantic
 from pydantic import UUID4
 from rich.console import Console
 from rich.progress import Progress
-from sqlmodel import (Field, Relationship, Session, SQLModel, create_engine,
-                      select)
+from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
 import base
 
-PG_FILE_NAME = "jitsu_dev"
+
+def config(filename="database.ini", section="postgresql"):
+    parser = ConfigParser()
+    parser.read(filename)
+    auth = {}
+    if parser.has_section(section):
+        for param in parser[section].keys():
+            auth[param] = parser.get(section, param, raw=True)
+    else:
+        raise Exception(
+            "Section {0} not found in the {1} file".format(section, filename)
+        )
+    # rich.inspect(auth)
+    return auth
+
+
+params = config()
+
 PG_URL = "postgresql+pg8000://{}:{}@{}:{}/{}".format(
-    "jitsu_dev", "rash4z4m!", "165.227.70.211", 5432, PG_FILE_NAME
+    params["user"],
+    params["password"],
+    params["host"],
+    params["port"],
+    params["database"],
 )
 # engine = create_engine(PG_URL, echo=True)
 engine = create_engine(PG_URL)

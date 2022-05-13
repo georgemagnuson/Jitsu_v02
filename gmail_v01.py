@@ -32,6 +32,10 @@ def get_args():
     return parser.parse_args()
 
 
+# def return_
+#
+#
+#
 # --------------------------------------------------
 def main():
     """Make a jazz noise here"""
@@ -70,12 +74,12 @@ def main():
         # rich.inspect(message)
         console.rule()
 
-        print(f"[white]To        : [bright_white]{message.recipient}[/]")
+        print(f"[bright_black]To        : [bright_white]{message.recipient}[/]")
         print(f"[bright_black]From      : [bright_white]{message.sender}[/]")
-        print(f"[white]Date      : [bright_white]{message.date}[/]")
-        print(f"[white]Subject   : [bright_white]{message.subject}[/]")
-        print(f"[white]Snippet   : [bright_white]{message.snippet}[/]")
-        print(f"[white]Attachment: [bright_white]{message.attachments}[/]")
+        print(f"[bright_black]Date      : [bright_white]{message.date}[/]")
+        print(f"[bright_black]Subject   : [bright_white]{message.subject}[/]")
+        print(f"[bright_black]Snippet   : [bright_white]{message.snippet}[/]")
+        print(f"[bright_black]Attachment: [bright_white]{message.attachments}[/]")
         if message.attachments:
             for attachment in message.attachments:
                 print(f"[white]\tFile Name: [bright_white]{attachment.filename}[/]")

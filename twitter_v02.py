@@ -8,10 +8,10 @@ Purpose: tweepy wrapper using twitter API v2
 import argparse
 import tweepy
 from configparser import ConfigParser
+
 # from icecream import ic
 import rich
 from datetime import datetime
-
 
 
 def config(filename="database.ini", section="twitter"):
@@ -42,11 +42,17 @@ def create_connection():
     return auth
 
 
-def send_a_DM(recipient_id='18240468', message="test DM"):
+def send_a_DM(recipient_id="18240468", message="test DM"):
     dt = datetime.now()
-    ts = str(dt.year)[-2:] + ("0" + str(dt.month))[-2:] + ("0" + str(dt.day))[-2:] + ("0" + str(dt.hour))[-2:] + ("0" + str(dt.minute))[-2:]
+    ts = (
+        str(dt.year)[-2:]
+        + ("0" + str(dt.month))[-2:]
+        + ("0" + str(dt.day))[-2:] + "."
+        + ("0" + str(dt.hour))[-2:]
+        + ("0" + str(dt.minute))[-2:]
+    )
 
-    message = message.strip()[-69:] + '@' + ts
+    message = message.strip()[-68:] + "@" + ts
 
     auth = create_connection()
     api = tweepy.API(auth)
@@ -97,6 +103,7 @@ def main():
     id_arg = args.id.strip()
 
     send_a_DM(id_arg, message_arg)
+
 
 # --------------------------------------------------
 if __name__ == "__main__":
