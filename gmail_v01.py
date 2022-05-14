@@ -6,6 +6,7 @@ Purpose: try out jeremyephron/simplegmail
 """
 
 import argparse
+import os
 
 import rich
 from rich import print
@@ -63,7 +64,7 @@ def main():
 
     messages = gmail.get_unread_inbox(labels=[invoicesNew_label])
     if len(messages) > 0:
-        tweet: str = f"gmail: {len(messages)} message"
+        tweet: str = f"{os.path.basename(__file__)}: {len(messages)} message"
         if len(messages) > 1:
             tweet = tweet + "s"
         twitter_v02.send_a_DM(message=tweet)

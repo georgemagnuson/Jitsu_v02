@@ -4,6 +4,7 @@ Author : georgemagnuson@gmail.com
 Date   : 2021-09-29
 Purpose: create a gmail dataclass
             that reads from and writes to gmail
+            and stores gmail messages to postgresql database
 """
 
 import base64
@@ -63,8 +64,7 @@ class GMailMessage:
         self.message_raw = msg_raw["raw"]
         email_obj = self.email_obj_from_raw_mail()
         datex = str(email_obj.get("Date"))
-        self.message_date = datetime.strptime(
-            datex, "%a, %d %b %Y %H:%M:%S %z")
+        self.message_date = datetime.strptime(datex, "%a, %d %b %Y %H:%M:%S %z")
         self.message_from = email_obj.get("From")
         self.message_to = email_obj.get("To")
         self.message_subject = email_obj.get("Subject")
@@ -174,8 +174,7 @@ class GMailMessage:
             )
             self.message_labels_list()
         else:
-            console.log(
-                f"[bright_yellow]WARNING: message_label_remove('{label}')")
+            console.log(f"[bright_yellow]WARNING: message_label_remove('{label}')")
             console.log(
                 f"[bright_yellow] label [white]{label}[/white] is not currently a message label",
             )

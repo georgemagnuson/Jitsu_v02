@@ -41,7 +41,7 @@ PG_URL = "postgresql+pg8000://{}:{}@{}:{}/{}".format(
     params["database"],
 )
 # engine = create_engine(PG_URL, echo=True)
-engine = create_engine(PG_URL)
+engine = create_engine(PG_URL, echo=False)
 
 
 def create_db_and_tables():
