@@ -47,12 +47,13 @@ def send_a_DM(recipient_id="18240468", message="test DM"):
     ts = (
         str(dt.year)[-2:]
         + ("0" + str(dt.month))[-2:]
-        + ("0" + str(dt.day))[-2:] + "."
+        + ("0" + str(dt.day))[-2:]
+        + "."
         + ("0" + str(dt.hour))[-2:]
         + ("0" + str(dt.minute))[-2:]
     )
 
-    message = message.strip()[-68:] + "@" + ts
+    message = message.strip()[-67:] + " @" + ts
 
     auth = create_connection()
     api = tweepy.API(auth)
