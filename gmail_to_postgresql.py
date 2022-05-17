@@ -71,7 +71,7 @@ def main():
     console.log(
         f"{os.path.basename(__file__)}: there are [red]{message_count}[/red] new message/s."
     )
-    twitter_v02.send_a_DM(message=tweet)
+    # twitter_v02.send_a_DM(message=tweet)
 
     with Progress() as progress:
         task = progress.add_task("Processing GMail", total=message_count)
@@ -98,7 +98,7 @@ def main():
             progress.console.print(
                 f'saving message id    : [blue]{message["id"]} to postgresql'
             )
-            #         gmail_message.save_message_to_postgresql()
+            message.save_message_to_postgresql()
             progress.console.print(
                 "[bright_black]adding SupplierMail/InvoicesProcessed label"
             )

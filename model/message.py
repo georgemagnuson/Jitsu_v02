@@ -15,7 +15,7 @@ from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, sele
 
 import base
 
-
+# ---- fill parameters for postgresql access from .ini file
 def config(filename="database.ini", section="postgresql"):
     parser = ConfigParser()
     parser.read(filename)
@@ -40,6 +40,7 @@ PG_URL = "postgresql+pg8000://{}:{}@{}:{}/{}".format(
     params["port"],
     params["database"],
 )
+
 # engine = create_engine(PG_URL, echo=True)
 engine = create_engine(PG_URL, echo=False)
 
@@ -47,32 +48,6 @@ engine = create_engine(PG_URL, echo=False)
 def create_db_and_tables():
     """run SQLModel to create database and table"""
     SQLModel.metadata.create_all(engine)
-
-
-def create_message(
-    gmessage_id: UUID4,
-    gmessage_date: date,
-    gmessage_from: str,
-    gmessage_to: str,
-    gmessage_subject: str,
-    gmessage_has_attachments: bool,
-    gmessage_raw: str,
-):
-    """extracted gmail info saved as postgresql message"""
-    message_1 = Message(
-        gmail_message_id=gmessage_id,
-        message_date=gmessage_date,
-        message_from=gmessage_from,
-        message_to=gmessage_to,
-        message_subject=gmessage_subject,
-        message_has_attachments=gmessage_has_attachments,
-        message_raw=gmessage_raw,
-    )
-
-    with Session(engine) as session:
-        session.add(message_1)
-
-        session.commit()
 
 
 class Message(base.BaseWithUUID, table=True):
@@ -88,28 +63,54 @@ class Message(base.BaseWithUUID, table=True):
     message_processed: Optional[bool] = None
     message_status: Optional[str] = None
 
+    # ┌───────────────────────────────────────────┐
+    # │         MESSAGES related functions        │
+    # └───────────────────────────────────────────┘
 
-# ┌───────────────────────────────────────────┐
-# │         MESSAGES related functions        │
-# └───────────────────────────────────────────┘
+    # ┌───────────────────────────────────────────┐
+    # │   Individual MESSAGE related functions    │
+    # └───────────────────────────────────────────┘
 
-# ┌───────────────────────────────────────────┐
-# │   Individual MESSAGE related functions    │
-# └───────────────────────────────────────────┘
+    def create_message(
+        self,
+        mail_message_id: UUID4,
+        mail_message_date: date,
+        mail_message_from: str,
+        mail_message_to: str,
+        mail_message_subject: str,
+        mail_message_has_attachments: bool,
+        mail_message_raw: str,
+    ):
+        """extracted gmail info saved as postgresql message"""
+        message_1 = Message(
+            gmail_message_id=mail_message_id,
+            message_date=mail_message_date,
+            message_from=mail_message_from,
+            message_to=mail_message_to,
+            message_subject=mail_message_subject,
+            message_has_attachments=mail_message_has_attachments,
+            message_raw=mail_message_raw,
+        )
 
+        with Session(engine) as session:
+            session.add(message_1)
 
-def update_message_processed_status(message: Message, processed: bool, status: str):
-    """update message"""
-    with Session(engine) as session:
-        statement = select(Message).where(Message.id == message.id)
-        results = session.exec(statement)
-        new_message = results.one()
-        # update the processed and status fields
-        new_message.message_processed = processed
-        new_message.message_status = status
-        # commit changes to database
-        session.add(new_message)
-        session.commit()
+            session.commit()
+
+    def update_message_processed_status(
+        self, message: Message, processed: bool, status: str
+    ):
+        """update message"""
+        with Session(engine) as session:
+            statement = select(Message).where(Message.id == message.id)
+            results = session.exec(statement)
+            new_message = results.one()
+            # update the processed and status fields
+            new_message.message_processed = processed
+            new_message.message_status = status
+            # commit changes to database
+            session.add(new_message)
+            session.commit()
 
 
 def email_obj_from_raw_mail(raw_email):
@@ -200,10 +201,10 @@ def select_messages_with(sql: str, limit=0):
         return results
 
 
-def select_first_message(gmessage_id: str):
+def select_first_message(mail_message_id: str):
     """Read one message"""
     with Session(engine) as session:
-        statement = select(Message).where(Message.gmail_message_id == gmessage_id)
+        statement = select(Message).where(Message.gmail_message_id == mail_message_id)
         results = session.exec(statement)
         message_1 = results.first()
         return message_1
@@ -274,7 +275,7 @@ def select_first_message(gmessage_id: str):
 #                 f"extracting data from {filepath}"
 #             )
 #             processed = convert_attachment_to_invoice(
-#                 gmessage_id=query, filepath=filepath
+#                 mail_message_id=query, filepath=filepath
 #             )
 #         except KeyError as error:
 #             progress.console.print(f"Key Error: {error}")

@@ -74,6 +74,41 @@ def create_message(
         session.commit()
 
 
+def save_message_to_postgresql(self):
+    console = Console()
+    if select_first_message(self.message_id):
+        console.log(
+            f"[bright_yellow]WARNING: message id [white]{self.message_id}[/white] already exists."
+        )
+    else:
+        create_message(
+            self.message_id,
+            self.message_date,
+            self.message_from,
+            self.message_to,
+            self.message_subject,
+            self.message_has_attachment,
+            self.message_raw,
+        )
+
+    console.log("adding SupplierMail/InvoicesProcessed label")
+    # SupplierMail/InvoicesProcessed
+    self.message_label_add("Label_6569528190372695776")
+    console.log("removing SupplierMail/InvoicesNew label")
+    # SupplierMail/InvoicesNew
+    self.message_label_remove("Label_6976860208836301729")
+    # except (Exception, pg8000.DatabaseError) as error:
+    #     console.log(f"[bold red]ERROR:{error}[/bold red]")
+    # console.log("error: {error_message}", error_message=error)
+    # sql_console.rule("[bold red]ERROR")
+    # sql_console.print(error)
+    # finally:
+    #     if sql_connection is not None:
+    #         sql_connection.close()
+    # console.log("Database connection closed.")
+    return
+
+
 # Read all message
 def select_all_message():
     with Session(engine) as session:
