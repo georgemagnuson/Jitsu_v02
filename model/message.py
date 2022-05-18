@@ -15,6 +15,7 @@ from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, sele
 
 import base
 
+
 # ---- fill parameters for postgresql access from .ini file
 def config(filename="database.ini", section="postgresql"):
     parser = ConfigParser()
@@ -51,7 +52,7 @@ def create_db_and_tables():
 
 
 class Message(base.BaseWithUUID, table=True):
-    """this holds the gmail_message class"""
+    """this holds the gmail_message SQL model class"""
 
     gmail_message_id: str
     message_date: date
@@ -63,58 +64,58 @@ class Message(base.BaseWithUUID, table=True):
     message_processed: Optional[bool] = None
     message_status: Optional[str] = None
 
-    # ┌───────────────────────────────────────────┐
-    # │         MESSAGES related functions        │
-    # └───────────────────────────────────────────┘
 
-    # ┌───────────────────────────────────────────┐
-    # │   Individual MESSAGE related functions    │
-    # └───────────────────────────────────────────┘
+# ┌───────────────────────────────────────────┐
+# │         MESSAGES related functions        │
+# └───────────────────────────────────────────┘
 
-    def create_message(
-        self,
-        mail_message_id: UUID4,
-        mail_message_date: date,
-        mail_message_from: str,
-        mail_message_to: str,
-        mail_message_subject: str,
-        mail_message_has_attachments: bool,
-        mail_message_raw: str,
-    ):
-        """extracted gmail info saved as postgresql message"""
-        message_1 = Message(
-            gmail_message_id=mail_message_id,
-            message_date=mail_message_date,
-            message_from=mail_message_from,
-            message_to=mail_message_to,
-            message_subject=mail_message_subject,
-            message_has_attachments=mail_message_has_attachments,
-            message_raw=mail_message_raw,
-        )
+# ┌───────────────────────────────────────────┐
+# │   Individual MESSAGE related functions    │
+# └───────────────────────────────────────────┘
 
-        with Session(engine) as session:
-            session.add(message_1)
 
-            session.commit()
+def create_message(
+    mail_message_id: UUID4,
+    mail_message_date: date,
+    mail_message_from: str,
+    mail_message_to: str,
+    mail_message_subject: str,
+    mail_message_has_attachments: bool,
+    mail_message_raw: str,
+):
+    """extracted gmail info saved as postgresql message"""
+    message_1 = Message(
+        gmail_message_id=mail_message_id,
+        message_date=mail_message_date,
+        message_from=mail_message_from,
+        message_to=mail_message_to,
+        message_subject=mail_message_subject,
+        message_has_attachments=mail_message_has_attachments,
+        message_raw=mail_message_raw,
+    )
 
-    def update_message_processed_status(
-        self, message: Message, processed: bool, status: str
-    ):
-        """update message"""
-        with Session(engine) as session:
-            statement = select(Message).where(Message.id == message.id)
-            results = session.exec(statement)
-            new_message = results.one()
-            # update the processed and status fields
-            new_message.message_processed = processed
-            new_message.message_status = status
-            # commit changes to database
-            session.add(new_message)
-            session.commit()
+    with Session(engine) as session:
+        session.add(message_1)
+
+        session.commit()
+
+
+def update_message_processed_status(message: Message, processed: bool, status: str):
+    """update message status as being processed or not"""
+    with Session(engine) as session:
+        statement = select(Message).where(Message.id == message.id)
+        results = session.exec(statement)
+        new_message = results.one()
+        # update the processed and status fields
+        new_message.message_processed = processed
+        new_message.message_status = status
+        # commit changes to database
+        session.add(new_message)
+        session.commit()
 
 
 def email_obj_from_raw_mail(raw_email):
-    """return email object from raw_mail"""
+    """return a fully formed email object from raw_mail"""
     decoded_msg_urlsafe = base64.urlsafe_b64decode(raw_email)
     return message_from_bytes(decoded_msg_urlsafe, policy=policy.default)
 
@@ -154,7 +155,7 @@ def save_attachment_to_dir(dir_arg="/tmp/attachments", attachments=None):
 
 
 def delete_attachment(filepath):
-    """Delete attachments after successful invoice2data"""
+    """Delete temporary attachments after successful invoice2data"""
     console = Console()
     try:
         # console.log(f'Deleting {filepath}')

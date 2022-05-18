@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 Author : georgemagnuson@gmail.com
-Date   : 2021-09-29
+Date   : 2022-05-17
 Purpose: create a gmail dataclass
-            that reads from and writes to gmail
-            and stores gmail messages to postgresql database
+            that reads from gmail and can change label
+            # and stores gmail messages to postgresql database
 """
 
 import base64
@@ -63,24 +63,26 @@ class GMailMessage:
         self.message_snippet = msg_full["snippet"]
         self.message_raw = msg_raw["raw"]
         email_obj = self.email_obj_from_raw_mail()
-        datex = str(email_obj.get("Date"))
-        self.message_date = datetime.strptime(datex, "%a, %d %b %Y %H:%M:%S %z")
+        # datex = str(email_obj.get("Date"))
+        self.message_date = datetime.strptime(
+            str(email_obj.get("Date")), "%a, %d %b %Y %H:%M:%S %z"
+        )
         self.message_from = email_obj.get("From")
         self.message_to = email_obj.get("To")
         self.message_subject = email_obj.get("Subject")
         # value = self.email_obj_from_raw_mail().get(field)
         payload = email_obj.get_payload()
         if email_obj.is_multipart():
-            for multipart in payload:
-                if multipart.get_filename():
-                    if "pdf" or "csv" in multipart.get_filename():
-                        self.message_has_attachment = True
-        #                 self.attachment_filename = multipart.get_filename()
-        #                 self.attachment_raw = multipart.get_payload()
+            self.message_has_attachment = True
+            # for multipart in payload:
+            #     if multipart.get_filename():
+            #         if "pdf" or "csv" in multipart.get_filename():
+            #                 self.attachment_filename = multipart.get_filename()
+            #                 self.attachment_raw = multipart.get_payload()
         return
 
     def get_message_full(self):
-        """gets one specific message, full format, as given by message_id_arg"""
+        """gets one specific message from email server (google-gmail), full format, as given by message_id_arg"""
         msg_full = (
             self.gmail_service.users()
             .messages()
@@ -90,7 +92,7 @@ class GMailMessage:
         return msg_full
 
     def get_message_raw(self):
-        """gets one specific message, raw format, as given by message_id_arg"""
+        """gets one specific message from email server (google-gmail), raw format, as given by message_id_arg"""
         msg_raw = (
             self.gmail_service.users()
             .messages()
@@ -112,22 +114,20 @@ class GMailMessage:
 
     def message_label_add(self, label):
         """add a given label to a message"""
-        console = Console()
         # available_labels = get_labels_list(service)
         # ic(available_labels)
         # current_labels = message_labels_list(service, message_id)
         if label in self.message_labels:
             # if label in current_labels:
+            console = Console()
             console.log(
                 f"[bright_yellow]WARNING:\n label [white]{label}[/white] already exists for message."
             )
         else:
-            mail_raw = (
-                self.gmail_service.users()
-                .messages()
-                .modify(userId="me", id=self.message_id, body={"addLabelIds": label})
-                .execute()
-            )
+            self.gmail_service.users().messages().modify(
+                userId="me", id=self.message_id, body={"addLabelIds": label}
+            ).execute()
+            # reload self
             self.message_labels_list()
         # ic(current_labels)
         # else:
@@ -139,17 +139,15 @@ class GMailMessage:
 
     def message_label_remove(self, label):
         """remove label from message list of labels"""
-        console = Console()
         # current_labels = self,message_labels_list(service, message_id)
         if label in self.message_labels:
-            mail_raw = (
-                self.gmail_service.users()
-                .messages()
-                .modify(userId="me", id=self.message_id, body={"removeLabelIds": label})
-                .execute()
-            )
+            self.gmail_service.users().messages().modify(
+                userId="me", id=self.message_id, body={"removeLabelIds": label}
+            ).execute()
+            # reload self
             self.message_labels_list()
         else:
+            console = Console()
             console.log(f"[bright_yellow]WARNING: message_label_remove('{label}')")
             console.log(
                 f"[bright_yellow] label [white]{label}[/white] is not currently a message label",

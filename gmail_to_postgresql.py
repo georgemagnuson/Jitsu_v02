@@ -15,14 +15,16 @@ from rich.progress import Progress
 
 import twitter_v02
 import jitsu_gmail.gmail_dataclass
-import jitsu_gmail.gmail_message
+
+# import jitsu_gmail.gmail_message
+# import model.message
 
 
 def get_args():
     """Get command-line arguments"""
 
     parser = argparse.ArgumentParser(
-        description="try out jeremyephron/simplemail",
+        description="get emails from google folder and save to postgresql database",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -42,7 +44,6 @@ def main():
     # args = get_args()
     # username = args.positional
     # password = args.password
-
     # print(f'username = "{username}"')
     # print(f'password = "{password}"')
 
@@ -53,16 +54,20 @@ def main():
 
     console = Console()
 
-    console.log("creating database and tables")
-    jitsu_gmail.gmail_message.create_db_and_tables()
+    # console.log("creating database and tables")
+    # model.message.create_db_and_tables()
 
-    console.log("initializing gmail_messages")
+    console.log("initializing gmail_messages mail list object")
     gmail_messages = jitsu_gmail.gmail_dataclass.MailList("database.ini", "gmail")
 
-    console.log("getting gmail labels")
-    gmail_messages.get_labels_list()
+    # console.log("getting gmail labels")
+    # gmail_messages.get_labels_list()
+    # console.log(gmail_messages.folder_labels)
 
-    console.log("collection messages from SupplierMail/InvoicesNew")
+    console.log(
+        "collect messages from SupplierMail/InvoicesNew into gmail_messages mail list"
+    )
+
     gmail_messages.get_folder_messages("SupplierMail/InvoicesNew")
     message_count = len(gmail_messages.messages)
     tweet = f"{os.path.basename(__file__)}: {message_count} new message"
@@ -92,26 +97,26 @@ def main():
             progress.console.print(
                 f"processing message_id: [blue]{progress_note[0:100]}"
             )
-            progress.console.print(
-                f"original labels      : [blue]{gmail_message.message_labels}"
-            )
-            progress.console.print(
-                f'saving message id    : [blue]{message["id"]} to postgresql'
-            )
-            message.save_message_to_postgresql()
-            progress.console.print(
-                "[bright_black]adding SupplierMail/InvoicesProcessed label"
-            )
-            # SupplierMail/InvoicesProcessed
+            # progress.console.print(
+            #     f"original labels      : [blue]{gmail_message.message_labels}"
+            # )
+            # progress.console.print(
+            #     f'saving message id    : [blue]{message["id"]} to postgresql'
+            # )
+            # message.save_message_to_postgresql()
+            # progress.console.print(
+            #     "[bright_black]adding SupplierMail/InvoicesProcessed label"
+            # )
+            # SupplierMail / InvoicesProcessed
             # gmail_message.message_label_add("Label_6569528190372695776")
 
-            progress.console.print(
-                "[bright_black]removing SupplierMail/InvoicesNew label"
-            )
+            # progress.console.print(
+            #     "[bright_black]removing SupplierMail/InvoicesNew label"
+            # )
             # SupplierMail/InvoicesNew
-            progress.console.print(
-                f"final labels         : [blue]{gmail_message.message_labels}"
-            )
+            # progress.console.print(
+            #     f"final labels         : [blue]{gmail_message.message_labels}"
+            # )
             # gmail_message.message_label_remove("Label_6976860208836301729")
 
             progress.advance(task)
