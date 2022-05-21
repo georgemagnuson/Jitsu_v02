@@ -231,7 +231,7 @@ class MailList:
     credentials_path: str
     scopes: str
     our_email: str
-    folder_labels: list
+    folder_labels: dict
     messages: list
 
     def __init__(self, filename="database.ini", section="gmail"):
@@ -295,10 +295,14 @@ class MailList:
     def get_labels_list(self):
         """get a list of folders"""
         # GET https://gmail.googleapis.com/gmail/v1/users/{userId}/labels
-        self.folder_labels = (
-            self.list_service.users().labels().list(userId="me").execute()
-        )
-        # result is initially a dict but below returns a list of labels
+        label_dict = self.list_service.users().labels().list(userId="me").execute()
+        label_list = label_dict["labels"]
+        # console = Console()
+        self.folder_labels = {}
+        for label in label_list:
+            # console.print(label["id"], label["name"])
+            self.folder_labels[label["id"]] = label["name"]
+        # result is initially a list of dicts but this constructs an actual dict
         return
 
     def perform_query_on_messages(self, query):

@@ -12,6 +12,7 @@ import rich
 from rich import print
 from rich.console import Console
 from rich.progress import Progress
+from rich.table import Table
 
 import twitter_v02
 import jitsu_gmail.gmail_dataclass
@@ -60,9 +61,17 @@ def main():
     console.log("initializing gmail_messages mail list object")
     gmail_messages = jitsu_gmail.gmail_dataclass.MailList("database.ini", "gmail")
 
-    # console.log("getting gmail labels")
-    # gmail_messages.get_labels_list()
-    # console.log(gmail_messages.folder_labels)
+    gmail_messages.get_labels_list()
+    table = Table(title="GMail labels")
+    table.add_column(
+        "ID",
+    )
+    table.add_column(
+        "Name",
+    )
+    for key in gmail_messages.folder_labels.keys():
+        table.add_row(key, gmail_messages.folder_labels[key])
+    console.print(table)
 
     console.log(
         "collect messages from SupplierMail/InvoicesNew into gmail_messages mail list"
@@ -93,13 +102,22 @@ def main():
                 + " "
                 + gmail_message.message_from
             )
-            progress.console.rule()
+            # progress.console.rule()
             progress.console.print(
                 f"processing message_id: [blue]{progress_note[0:100]}"
             )
-            # progress.console.print(
-            #     f"original labels      : [blue]{gmail_message.message_labels}"
-            # )
+            progress.console.print(
+                f"original labels      : [blue]{gmail_message.message_labels}"
+            )
+            label_names = []
+            for label_id in gmail_message.message_labels:
+                progress.console.print(gmail_messages.folder_labels[label_id])
+
+            progress.console.print(f"label names : [bright_blue]{label_names}")
+
+            # for label in gmail_message.message_labels:
+            # progress.console.print(gmail_messages.folder_labels)
+
             # progress.console.print(
             #     f'saving message id    : [blue]{message["id"]} to postgresql'
             # )
