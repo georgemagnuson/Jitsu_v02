@@ -13,7 +13,7 @@ from rich.console import Console
 from rich.progress import Progress
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
-import base
+from model import base
 
 
 # ---- fill parameters for postgresql access from .ini file
@@ -98,6 +98,49 @@ def create_message(
         session.add(message_1)
 
         session.commit()
+
+
+def save_message_to_postgresql(
+    gmail_message_id,
+    mail_message_date: date,
+    mail_message_from: str,
+    mail_message_to: str,
+    mail_message_subject: str,
+    mail_message_has_attachments: bool,
+    mail_message_raw: str,
+):
+    console = Console()
+    if select_first_message(gmail_message_id):
+        console.log(
+            f"[bright_yellow]WARNING: message id [white]{gmail_message_id}[/white] already exists."
+        )
+    else:
+        create_message(
+            gmail_message_id,
+            mail_message_date,
+            mail_message_from,
+            mail_message_to,
+            mail_message_subject,
+            mail_message_has_attachments,
+            mail_message_raw,
+        )
+
+    console.log("adding SupplierMail/InvoicesProcessed label")
+    # SupplierMail/InvoicesProcessed
+    # self.message_label_add("Label_6569528190372695776")
+    console.log("removing SupplierMail/InvoicesNew label")
+    # SupplierMail/InvoicesNew
+    # self.message_label_remove("Label_6976860208836301729")
+    # except (Exception, pg8000.DatabaseError) as error:
+    #     console.log(f"[bold red]ERROR:{error}[/bold red]")
+    # console.log("error: {error_message}", error_message=error)
+    # sql_console.rule("[bold red]ERROR")
+    # sql_console.print(error)
+    # finally:
+    #     if sql_connection is not None:
+    #         sql_connection.close()
+    # console.log("Database connection closed.")
+    return
 
 
 def update_message_processed_status(message: Message, processed: bool, status: str):
@@ -204,11 +247,10 @@ def select_messages_with(sql: str, limit=0):
 
 def select_first_message(mail_message_id: str):
     """Read one message"""
-    with Session(engine) as session:
-        statement = select(Message).where(Message.gmail_message_id == mail_message_id)
-        results = session.exec(statement)
-        message_1 = results.first()
-        return message_1
+    with Session(engine) as session_1:
+        statement_1 = select(Message).where(Message.gmail_message_id == mail_message_id)
+        result = session_1.exec(statement_1).first()
+        return result
 
 
 # def select_unprocessed_messages(sql="", qty=0):

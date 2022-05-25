@@ -9,6 +9,7 @@ import argparse
 import os
 
 import rich
+from pydantic.types import UUID4
 from rich import print
 from rich.console import Console
 from rich.progress import Progress
@@ -18,7 +19,11 @@ import twitter_v02
 import jitsu_gmail.gmail_dataclass
 
 # import jitsu_gmail.gmail_message
-# import model.message
+from model.message import (
+    save_message_to_postgresql,
+    select_all_messages_limit,
+    create_db_and_tables,
+)
 
 
 def get_args():
@@ -38,6 +43,19 @@ def get_args():
     return parser.parse_args()
 
 
+def print_labelNames(folder_labels: dict):
+    table = Table(title="GMail labels")
+    table.add_column(
+        "ID",
+    )
+    table.add_column(
+        "Name",
+    )
+    for key in folder_labels.keys():
+        table.add_row(key, folder_labels[key])
+    return table
+
+
 # --------------------------------------------------
 def main():
     """Make a jazz noise here"""
@@ -55,23 +73,11 @@ def main():
 
     console = Console()
 
-    # console.log("creating database and tables")
-    # model.message.create_db_and_tables()
-
     console.log("initializing gmail_messages mail list object")
     gmail_messages = jitsu_gmail.gmail_dataclass.MailList("database.ini", "gmail")
-
     gmail_messages.get_labels_list()
-    table = Table(title="GMail labels")
-    table.add_column(
-        "ID",
-    )
-    table.add_column(
-        "Name",
-    )
-    for key in gmail_messages.folder_labels.keys():
-        table.add_row(key, gmail_messages.folder_labels[key])
-    console.print(table)
+
+    console.print(print_labelNames(gmail_messages.folder_labels))
 
     console.log(
         "collect messages from SupplierMail/InvoicesNew into gmail_messages mail list"
@@ -81,18 +87,20 @@ def main():
     message_count = len(gmail_messages.messages)
     tweet = f"{os.path.basename(__file__)}: {message_count} new message"
     if message_count > 1:
-        tweet = tweet + "s"
-    console.log(
-        f"{os.path.basename(__file__)}: there are [red]{message_count}[/red] new message/s."
-    )
-    # twitter_v02.send_a_DM(message=tweet)
+        console.log("creating database and tables")
+        create_db_and_tables()
+        tweet = f"{os.path.basename(__file__)}: {message_count} new messages"
+    console.log(f"{tweet}")
+    twitter_v02.send_a_DM(message=tweet)
 
     with Progress() as progress:
         task = progress.add_task("Processing GMail", total=message_count)
-        for message in gmail_messages.messages:
+        for message_id in gmail_messages.messages:
+            progress.console.rule()
             gmail_message = jitsu_gmail.gmail_dataclass.GMailMessage(
-                gmail_messages.list_service, message["id"]
+                gmail_messages.list_service, message_id["id"]
             )
+
             progress_note = (
                 gmail_message.message_id
                 + ": "
@@ -106,36 +114,48 @@ def main():
             progress.console.print(
                 f"processing message_id: [blue]{progress_note[0:100]}"
             )
+            # progress.console.print(
+            #     f"original labelIds    : [blue]{gmail_message.message_labelIds}"
+            # )
+
+            gmail_message.get_labelNames(gmail_messages.folder_labels)
             progress.console.print(
-                f"original labels      : [blue]{gmail_message.message_labels}"
+                f"label names          : [bright_blue]{gmail_message.message_labelNames}"
             )
-            label_names = []
-            for label_id in gmail_message.message_labels:
-                progress.console.print(gmail_messages.folder_labels[label_id])
 
-            progress.console.print(f"label names : [bright_blue]{label_names}")
+            progress.console.print(
+                f"[bright_black]saving message id    : [blue]{gmail_message.message_id} [bright_black]to postgresql"
+            )
+            save_message_to_postgresql(
+                gmail_message.message_id,
+                gmail_message.message_date,
+                gmail_message.message_from,
+                gmail_message.message_to,
+                gmail_message.message_subject,
+                gmail_message.message_has_attachment,
+                gmail_message.message_raw,
+            )
 
-            # for label in gmail_message.message_labels:
-            # progress.console.print(gmail_messages.folder_labels)
-
-            # progress.console.print(
-            #     f'saving message id    : [blue]{message["id"]} to postgresql'
-            # )
-            # message.save_message_to_postgresql()
-            # progress.console.print(
-            #     "[bright_black]adding SupplierMail/InvoicesProcessed label"
-            # )
+            progress.console.print(
+                "[bright_black]adding SupplierMail/InvoicesProcessed label"
+            )
             # SupplierMail / InvoicesProcessed
-            # gmail_message.message_label_add("Label_6569528190372695776")
+            gmail_message.message_label_add("Label_6569528190372695776")
+
+            progress.console.print(
+                "[bright_black]removing SupplierMail/InvoicesNew label"
+            )
+            # SupplierMail/InvoicesNew
+            gmail_message.message_label_remove("Label_6976860208836301729")
 
             # progress.console.print(
-            #     "[bright_black]removing SupplierMail/InvoicesNew label"
+            #     f"final labels         : [blue]{gmail_message.message_labelIds}"
             # )
-            # SupplierMail/InvoicesNew
-            # progress.console.print(
-            #     f"final labels         : [blue]{gmail_message.message_labels}"
-            # )
-            # gmail_message.message_label_remove("Label_6976860208836301729")
+
+            gmail_message.get_labelNames(gmail_messages.folder_labels)
+            progress.console.print(
+                f"label names          : [bright_blue]{gmail_message.message_labelNames}"
+            )
 
             progress.advance(task)
 

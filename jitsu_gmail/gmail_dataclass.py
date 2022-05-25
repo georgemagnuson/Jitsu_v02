@@ -32,7 +32,8 @@ from rich.progress import Progress
 class GMailMessage:
     message_id: str
     gmail_service: str
-    message_labels: list
+    message_labelIds: list
+    message_labelNames: list
     message_date: datetime
     message_from: str
     message_to: str
@@ -59,7 +60,8 @@ class GMailMessage:
             .get(userId="me", id=self.message_id, format="raw")
             .execute()
         )
-        self.message_labels = msg_full["labelIds"]
+        self.message_labelIds = msg_full["labelIds"]
+        self.message_labelNames = []
         self.message_snippet = msg_full["snippet"]
         self.message_raw = msg_raw["raw"]
         email_obj = self.email_obj_from_raw_mail()
@@ -80,6 +82,12 @@ class GMailMessage:
             #                 self.attachment_filename = multipart.get_filename()
             #                 self.attachment_raw = multipart.get_payload()
         return
+
+    def get_labelNames(self, messages_folder_labels: dict = []):
+        self.message_labelNames = []
+        for label_id in self.message_labelIds:
+            self.message_labelNames.append(messages_folder_labels[label_id])
+            # progress.console.print(gmail_messages.folder_labels[label_id])
 
     def get_message_full(self):
         """gets one specific message from email server (google-gmail), full format, as given by message_id_arg"""
@@ -109,7 +117,7 @@ class GMailMessage:
     # deal with individual message label: list, add or remove
     def message_labels_list(self):
         """return a list of message's labels"""
-        self.message_labels = self.get_message_full()["labelIds"]
+        self.message_labelIds = self.get_message_full()["labelIds"]
         return
 
     def message_label_add(self, label):
@@ -117,7 +125,7 @@ class GMailMessage:
         # available_labels = get_labels_list(service)
         # ic(available_labels)
         # current_labels = message_labels_list(service, message_id)
-        if label in self.message_labels:
+        if label in self.message_labelIds:
             # if label in current_labels:
             console = Console()
             console.log(
@@ -140,7 +148,7 @@ class GMailMessage:
     def message_label_remove(self, label):
         """remove label from message list of labels"""
         # current_labels = self,message_labels_list(service, message_id)
-        if label in self.message_labels:
+        if label in self.message_labelIds:
             self.gmail_service.users().messages().modify(
                 userId="me", id=self.message_id, body={"removeLabelIds": label}
             ).execute()
@@ -163,7 +171,7 @@ class GMailMessage:
 
     def message_extract_attachments(self):
         """extracts pdf attachments from message"""
-        email_obj = self.email_obj_from_raw_mail()
+        self.email_obj_from_raw_mail()
         # inspect(email_obj, all=True)
         # payload = email_obj.get_payload()
         # if email_obj.is_multipart():
