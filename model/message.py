@@ -127,10 +127,10 @@ def save_message_to_postgresql(
 
     console.log("adding SupplierMail/InvoicesProcessed label")
     # SupplierMail/InvoicesProcessed
-    # self.message_label_add("Label_6569528190372695776")
+    self.message_label_add("Label_6569528190372695776")
     console.log("removing SupplierMail/InvoicesNew label")
     # SupplierMail/InvoicesNew
-    # self.message_label_remove("Label_6976860208836301729")
+    self.message_label_remove("Label_6976860208836301729")
     # except (Exception, pg8000.DatabaseError) as error:
     #     console.log(f"[bold red]ERROR:{error}[/bold red]")
     # console.log("error: {error_message}", error_message=error)
