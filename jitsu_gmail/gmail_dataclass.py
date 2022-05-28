@@ -14,6 +14,8 @@ from configparser import ConfigParser
 from dataclasses import dataclass
 from datetime import datetime
 from email import message_from_bytes, policy
+import logging
+from rich.logging import RichHandler
 
 # GMail API
 # pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
@@ -26,6 +28,15 @@ from rich.progress import Progress
 # import pg8000
 
 # import message_v01
+
+logging.basicConfig(
+    level="NOTSET",
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)],
+)
+
+log = logging.getLogger("rich")
 
 
 @dataclass
@@ -316,8 +327,8 @@ class MailList:
     def perform_query_on_messages(self, query):
         """search in gmail form matches to query"""
         self.messages = []
+        log.info(f"performing query {query}")
         console = Console()
-        console.log(f"performing query {query}")
         with console.status(
             "[bold green]Loading messages...", spinner="point"
         ) as status:
