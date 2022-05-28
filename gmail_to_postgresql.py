@@ -161,8 +161,9 @@ def main():
                         gmail_message.message_has_attachment,
                         gmail_message.message_raw,
                     )
-                gmail_message.message_label_add("Label_6569528190372695776")
-                gmail_message.message_label_remove("Label_6976860208836301729")
+                    gmail_message.message_label_add("Label_6569528190372695776")
+                    gmail_message.message_label_remove("Label_6976860208836301729")
+
                 gmail_message.get_labelNames(gmail_messages.folder_labels)
                 progress.console.print(
                     f"label names          : [bright_blue]{gmail_message.message_labelNames}"
