@@ -7,11 +7,13 @@ Purpose: Rock the Casbah
 
 import argparse
 import logging
+from logging.handlers import RotatingFileHandler
+
 from rich import print
 from rich.console import Console
 from rich.logging import RichHandler
 
-console = Console()
+# console = Console()
 # --------------------------------------------------
 
 
@@ -54,6 +56,15 @@ def get_args():
 
     parser.add_argument("-o", "--on", help="A boolean flag", action="store_true")
 
+    parser.add_argument(
+        "-l",
+        "--logfile",
+        help="Location of log file",
+        metavar="FILE",
+        type=argparse.FileType("a"),
+        default=None,
+    )
+
     parser.add_argument("-v", "--verbose", action="count", default=0)
 
     return parser.parse_args()
@@ -68,30 +79,57 @@ def main():
     int_arg = args.int
     file_arg = args.file
     flag_arg = args.on
+    logfile_arg = args.logfile
     verbose_arg = args.verbose
     pos_arg = args.positional
+
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     level = levels[min(verbose_arg, len(levels) - 1)]  # cap to last level index
+
     logging.basicConfig(
         level=level,
         format="%(message)s",
         datefmt="[%X]",
-        handlers=[RichHandler(rich_tracebacks=True)],
+        handlers=[
+            RichHandler(
+                console=Console(file=logfile_arg),
+                rich_tracebacks=True,
+                tracebacks_show_locals=True,
+                markup=True,
+            ),
+        ],
     )
 
-    print(f'str_arg = "{str_arg}"')
-    print(f'int_arg = "{int_arg}"')
-    print('file_arg = "{}"'.format(file_arg.name if file_arg else ""))
-    print(f'flag_arg = "{flag_arg}"')
-    print(f'verbose_arg = "{verbose_arg}"')
-    print(f'positional = "{pos_arg}"')
+    log = logging.getLogger(__name__)
 
-    # logging tests
-    logging.debug("debug message")
-    logging.info("info message")
-    logging.warning("warning message")
-    logging.error("error message")
-    logging.critical("critical message")
+    if logfile_arg:
+        file_log = logging.getLogger("rotate file")
+        file_handler = logging.handlers.RotatingFileHandler(
+            filename=logfile_arg.name, mode="a", maxBytes=5000000, backupCount=1
+        )
+        file_log.addHandler(file_handler)
+
+    # log.info("Hello, World!")
+    # log.info(f'str_arg     = "{str_arg}"')
+    # log.info(f'int_arg     = "{int_arg}"')
+    # log.info('file_arg     = "{}"'.format(file_arg.name if file_arg else ""))
+    # log.info(f'flag_arg    = "{flag_arg}"')
+    # log.info('logfile_arg  = "{}"'.format(logfile_arg.name if logfile_arg else ""))
+    # log.info(f'verbose_arg = "{verbose_arg}"')
+    # log.info(f'positional  = "{pos_arg}"')
+    # log.info(f'level       = "{level}"')
+    #
+    # # logging tests
+    # log.debug("debug message")
+    # log.info("info message")
+    # log.warning("warning message")
+    # log.error("error message")
+    # log.critical("critical message")
+    #
+    # try:
+    #     print(1 / 0)
+    # except Exception:
+    #     log.exception("unable print!")
 
 
 # --------------------------------------------------
