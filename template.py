@@ -101,6 +101,13 @@ def main():
     )
 
     log = logging.getLogger(__name__)
+    rich_log = RichHandler(
+        console=Console(file=logfile_arg),
+        rich_tracebacks=True,
+        tracebacks_show_locals=True,
+        markup=True,
+    )
+    log.addHandler(rich_log)
 
     if logfile_arg:
         file_log = logging.getLogger("rotate file")
@@ -109,7 +116,7 @@ def main():
         )
         file_log.addHandler(file_handler)
 
-    # log.info("Hello, World!")
+    log.info("Hello, World!")
     # log.info(f'str_arg     = "{str_arg}"')
     # log.info(f'int_arg     = "{int_arg}"')
     # log.info('file_arg     = "{}"'.format(file_arg.name if file_arg else ""))

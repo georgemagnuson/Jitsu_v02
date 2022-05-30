@@ -8,30 +8,21 @@ Purpose: went back to jitsu_gmail
 import argparse
 import os
 
-import rich
-from pydantic.types import UUID4
 import logging
-from rich import print
-from rich.console import Console
 from rich.progress import Progress
 from rich.table import Table
+from logging.handlers import RotatingFileHandler
+
+from rich import print
+from rich.console import Console
 from rich.logging import RichHandler
 
 import twitter_v02
 import jitsu_gmail.gmail_dataclass
 
-# import jitsu_gmail.gmail_message
 from model.message import (
     save_message_to_postgresql,
-    select_all_messages_limit,
     create_db_and_tables,
-)
-
-logging.basicConfig(
-    level="NOTSET",
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True)],
 )
 
 
@@ -43,15 +34,20 @@ def get_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    # parser.add_argument("positional", metavar="str", help="username")
-
-    # parser.add_argument(
-    #     "-p", "--password", help="password", metavar="str", type=str, default=""
-    # )
-
     parser.add_argument(
         "-t", "--test", help="turn on non-destructive mode", action="store_true"
     )
+
+    parser.add_argument(
+        "-l",
+        "--logfile",
+        help="Location of log file",
+        metavar="FILE",
+        type=argparse.FileType("a"),
+        default=None,
+    )
+
+    parser.add_argument("-v", "--verbose", action="count", default=0)
 
     return parser.parse_args()
 
@@ -72,39 +68,54 @@ def print_labelNames(folder_labels: dict):
 # --------------------------------------------------
 def main():
     console = Console()
-    log = logging.getLogger("rich")
-    # console.print(logging.getLevelName(0))
-    # console.print(logging.getLevelName("DEBUG"))
-    # console.print(logging.getLevelName(10))
-    # console.print(logging.getLevelName(3))
-    # log.setLevel(logging.DEBUG)
-    # log.setLevel(logging.INFO)
-    log.setLevel(logging.WARNING)
-    # log.setLevel(logging.ERROR)
-    # log.setLevel(logging.CRITICAL)
     args = get_args()
-    # username = args.positional
-    # password = args.password
     test_mode = args.test
-    # print(f'username = "{username}"')
-    # print(f'password = "{password}"')
+    logfile_arg = args.logfile
+    verbose_arg = args.verbose
+
+    levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+    level = levels[min(verbose_arg, len(levels) - 1)]  # cap to last level index
+
+    logging.basicConfig(
+        level=level,
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[
+            RichHandler(
+                console=Console(file=logfile_arg),
+                rich_tracebacks=True,
+                tracebacks_show_locals=True,
+                markup=True,
+            ),
+        ],
+    )
+
+    log = logging.getLogger("rich")
+    rich_log = RichHandler(
+        console=Console(file=logfile_arg),
+        rich_tracebacks=True,
+        tracebacks_show_locals=True,
+        markup=True,
+    )
+    log.addHandler(rich_log)
+
+    if logfile_arg:
+        file_log = logging.getLogger("rotate file")
+        file_handler = logging.handlers.RotatingFileHandler(
+            filename=logfile_arg.name, mode="a", maxBytes=5000000, backupCount=1
+        )
+        file_log.addHandler(file_handler)
+
     if test_mode:
-        log.setLevel(logging.INFO)
         log.info("test mode - non-destructive on")
+
     # Unread messages in your inbox
     # messages = gmail.get_unread_inbox()
     # id = 'Label_6976860208836301729'
     # name = 'SupplierMail/InvoicesNew'
 
-    # try:
-    #     print(1 / 0)
-    # except Exception:
-    #     log.exception("unable print!")
-
     log.info("initializing gmail_messages mail list object")
     gmail_messages = jitsu_gmail.gmail_dataclass.MailList("database.ini", "gmail")
-
-    # console.print(print_labelNames(gmail_messages.folder_labels))
 
     log.info(
         "collect messages from SupplierMail/InvoicesNew into gmail_messages mail list"
@@ -135,13 +146,10 @@ def main():
                     + " "
                     + gmail_message.message_from
                 )
-                # progress.console.rule()
                 progress.console.print(
                     f"processing message_id: [blue]{progress_note[0:100]}"
                 )
-                # progress.console.print(
-                #     f"original labelIds    : [blue]{gmail_message.message_labelIds}"
-                # )
+                log.info(f"processing message_id: {progress_note[0:150]}")
 
                 gmail_message.get_labelNames(gmail_messages.folder_labels)
                 progress.console.print(
@@ -178,36 +186,6 @@ def main():
     log.info("done.")
 
 
-"""
-    messages = gmail.get_unread_inbox(labels=[invoicesNew_label])
-    if len(messages) > 0:
-        tweet: str = f"gmail: {len(messages)} message"
-        if len(messages) > 1:
-            tweet = tweet + "s"
-        twitter_v02.send_a_DM(message=tweet)
-    print(
-        f"[blue]{invoicesNew_label.name}[/blue] message count: [bold red]{len(messages)}[/bold red]"
-    )
-    for message in messages:
-        # rich.inspect(message)
-        console.rule()
-
-        print(f"[bright_black]To        : [bright_white]{message.recipient}[/]")
-        print(f"[bright_black]From      : [bright_white]{message.sender}[/]")
-        print(f"[bright_black]Date      : [bright_white]{message.date}[/]")
-        print(f"[bright_black]Subject   : [bright_white]{message.subject}[/]")
-        print(f"[bright_black]Snippet   : [bright_white]{message.snippet}[/]")
-        print(f"[bright_black]Attachment: [bright_white]{message.attachments}[/]")
-        if message.attachments:
-            for attachment in message.attachments:
-                print(f"[white]\tFile Name: [bright_white]{attachment.filename}[/]")
-
-    # labels = gmail.list_labels()
-    # rich.inspect(labels)
-    # for label in labels:
-    #    rich.inspect(label)
-
-"""
 # --------------------------------------------------
 if __name__ == "__main__":
     main()

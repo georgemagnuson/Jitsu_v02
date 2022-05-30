@@ -1,0 +1,59 @@
+[05/30/22 20:37:00] INFO     test mode - non-destructive on                                                                             gmail_to_postgresql.py:110
+                    INFO     initializing gmail_messages mail list object                                                               gmail_to_postgresql.py:117
+                    INFO     collect messages from SupplierMail/InvoicesNew into gmail_messages mail list                               gmail_to_postgresql.py:120
+                    INFO     performing query label:SupplierMail/InvoicesNew                                                                gmail_dataclass.py:330
+[05/30/22 20:37:07] INFO     processing message_id: 1811302e6615d656: May 30 2022 Self Service Invoice 4845454                          gmail_to_postgresql.py:152
+                             creditcontrol@foodstuffs-si.co.nz                                                                                                    
+[05/30/22 20:37:08] INFO     processing message_id: 18112d95e6ef8bb2: May 30 2022 CUST-702466-THE JITSU Bidfood Limited                 gmail_to_postgresql.py:152
+                             <accounts.dn@bidfood.co.nz>                                                                                                          
+[05/30/22 20:37:10] INFO     processing message_id: 1811287f78fa3984: May 30 2022 Customer Statement for THE JITSU as at 30/05/22       gmail_to_postgresql.py:152
+                             12:44:15.536 PM From Kaans - DO NOT REPLY <auto-send@kaans.co.nz>                                                                    
+[05/30/22 20:37:12] INFO     processing message_id: 18111f748e3c866d: May 30 2022 Sales - Tax Invoice SI02144244 From Kaans - DO NOT    gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:37:13] INFO     processing message_id: 18110b5053e914cb: May 29 2022 Your Data Export - Bidvest Invoices                   gmail_to_postgresql.py:152
+                             noreply@mybidfood.co.nz                                                                                                              
+[05/30/22 20:37:15] INFO     processing message_id: 1810d1f6e33d874b: May 29 2022 Sales - Tax Invoice SI02143582 From Kaans - DO NOT    gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:37:16] INFO     processing message_id: 1810cb568c8f8c8d: May 29 2022 Sales - Credit Memo SCM000792800 From Kaans - DO NOT  gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+                    INFO     gmail_to_postgresql.py: 7 new messages                                                                     gmail_to_postgresql.py:182
+                    INFO     done.                                                                                                      gmail_to_postgresql.py:186
+[05/30/22 20:48:58] INFO     test mode - non-destructive on                                                                             gmail_to_postgresql.py:110
+                    INFO     initializing gmail_messages mail list object                                                               gmail_to_postgresql.py:117
+                    INFO     collect messages from SupplierMail/InvoicesNew into gmail_messages mail list                               gmail_to_postgresql.py:120
+                    INFO     performing query label:SupplierMail/InvoicesNew                                                                gmail_dataclass.py:330
+[05/30/22 20:49:05] INFO     processing message_id: 1811302e6615d656: May 30 2022 Self Service Invoice 4845454                          gmail_to_postgresql.py:152
+                             creditcontrol@foodstuffs-si.co.nz                                                                                                    
+[05/30/22 20:49:07] INFO     processing message_id: 18112d95e6ef8bb2: May 30 2022 CUST-702466-THE JITSU Bidfood Limited                 gmail_to_postgresql.py:152
+                             <accounts.dn@bidfood.co.nz>                                                                                                          
+[05/30/22 20:49:09] INFO     processing message_id: 1811287f78fa3984: May 30 2022 Customer Statement for THE JITSU as at 30/05/22       gmail_to_postgresql.py:152
+                             12:44:15.536 PM From Kaans - DO NOT REPLY <auto-send@kaans.co.nz>                                                                    
+[05/30/22 20:49:10] INFO     processing message_id: 18111f748e3c866d: May 30 2022 Sales - Tax Invoice SI02144244 From Kaans - DO NOT    gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:49:11] INFO     processing message_id: 18110b5053e914cb: May 29 2022 Your Data Export - Bidvest Invoices                   gmail_to_postgresql.py:152
+                             noreply@mybidfood.co.nz                                                                                                              
+[05/30/22 20:49:13] INFO     processing message_id: 1810d1f6e33d874b: May 29 2022 Sales - Tax Invoice SI02143582 From Kaans - DO NOT    gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:49:14] INFO     processing message_id: 1810cb568c8f8c8d: May 29 2022 Sales - Credit Memo SCM000792800 From Kaans - DO NOT  gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+                    INFO     gmail_to_postgresql.py: 7 new messages                                                                     gmail_to_postgresql.py:182
+                    INFO     done.                                                                                                      gmail_to_postgresql.py:186
+[05/30/22 20:49:45] INFO     initializing gmail_messages mail list object                                                               gmail_to_postgresql.py:117
+                    INFO     collect messages from SupplierMail/InvoicesNew into gmail_messages mail list                               gmail_to_postgresql.py:120
+                    INFO     performing query label:SupplierMail/InvoicesNew                                                                gmail_dataclass.py:330
+[05/30/22 20:49:52] INFO     processing message_id: 1811302e6615d656: May 30 2022 Self Service Invoice 4845454                          gmail_to_postgresql.py:152
+                             creditcontrol@foodstuffs-si.co.nz                                                                                                    
+[05/30/22 20:49:59] INFO     processing message_id: 18112d95e6ef8bb2: May 30 2022 CUST-702466-THE JITSU Bidfood Limited                 gmail_to_postgresql.py:152
+                             <accounts.dn@bidfood.co.nz>                                                                                                          
+[05/30/22 20:50:08] INFO     processing message_id: 1811287f78fa3984: May 30 2022 Customer Statement for THE JITSU as at 30/05/22       gmail_to_postgresql.py:152
+                             12:44:15.536 PM From Kaans - DO NOT REPLY <auto-send@kaans.co.nz>                                                                    
+[05/30/22 20:50:17] INFO     processing message_id: 18111f748e3c866d: May 30 2022 Sales - Tax Invoice SI02144244 From Kaans - DO NOT    gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:50:24] INFO     processing message_id: 18110b5053e914cb: May 29 2022 Your Data Export - Bidvest Invoices                   gmail_to_postgresql.py:152
+                             noreply@mybidfood.co.nz                                                                                                              
+[05/30/22 20:50:32] INFO     processing message_id: 1810d1f6e33d874b: May 29 2022 Sales - Tax Invoice SI02143582 From Kaans - DO NOT    gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:50:40] INFO     processing message_id: 1810cb568c8f8c8d: May 29 2022 Sales - Credit Memo SCM000792800 From Kaans - DO NOT  gmail_to_postgresql.py:152
+                             REPLY <auto-send@kaans.co.nz>                                                                                                        
+[05/30/22 20:50:46] INFO     gmail_to_postgresql.py: 7 new messages                                                                     gmail_to_postgresql.py:182
+[05/30/22 20:50:47] INFO     done.                                                                                                      gmail_to_postgresql.py:186
