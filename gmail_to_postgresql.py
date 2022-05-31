@@ -13,7 +13,7 @@ from rich.progress import Progress
 from rich.table import Table
 from logging.handlers import RotatingFileHandler
 
-from rich import print
+# from rich import print
 from rich.console import Console
 from rich.logging import RichHandler
 
@@ -72,6 +72,8 @@ def main():
     test_mode = args.test
     logfile_arg = args.logfile
     verbose_arg = args.verbose
+    if logfile_arg and verbose_arg == 0:
+        verbose_arg = 1
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     level = levels[min(verbose_arg, len(levels) - 1)]  # cap to last level index
@@ -82,7 +84,6 @@ def main():
         datefmt="[%X]",
         handlers=[
             RichHandler(
-                console=Console(file=logfile_arg),
                 rich_tracebacks=True,
                 tracebacks_show_locals=True,
                 markup=True,
@@ -90,21 +91,29 @@ def main():
         ],
     )
 
-    log = logging.getLogger("rich")
-    rich_log = RichHandler(
-        console=Console(file=logfile_arg),
-        rich_tracebacks=True,
-        tracebacks_show_locals=True,
-        markup=True,
-    )
-    log.addHandler(rich_log)
-
     if logfile_arg:
-        file_log = logging.getLogger("rotate file")
-        file_handler = logging.handlers.RotatingFileHandler(
-            filename=logfile_arg.name, mode="a", maxBytes=5000000, backupCount=1
+        file_handler = RotatingFileHandler(
+            filename=logfile_arg.name,
+            mode="a",
+            maxBytes=5000000,
+            backupCount=1,
         )
-        file_log.addHandler(file_handler)
+        console_file_handler = RichHandler(
+            console=Console(file=logfile_arg),
+            rich_tracebacks=True,
+            tracebacks_show_locals=True,
+            markup=True,
+        )
+
+    log = logging.getLogger(__name__)
+
+    if verbose_arg > 0 and logfile_arg:
+        log.addHandler(console_file_handler)
+
+    if verbose_arg == 0 and logfile_arg:
+        log.addHandler(file_handler)
+
+    log.info("********************\n")
 
     if test_mode:
         log.info("test mode - non-destructive on")
@@ -120,9 +129,9 @@ def main():
     log.info(
         "collect messages from SupplierMail/InvoicesNew into gmail_messages mail list"
     )
-
     gmail_messages.get_folder_messages("SupplierMail/InvoicesNew")
     message_count = len(gmail_messages.messages)
+    log.info(f"message count: {message_count}")
     tweet = f"{os.path.basename(__file__)}: {message_count} new message"
     if message_count > 1:
         gmail_messages.get_labels_list()
@@ -171,6 +180,7 @@ def main():
                     )
                     gmail_message.message_label_add("Label_6569528190372695776")
                     gmail_message.message_label_remove("Label_6976860208836301729")
+                    log.info(f"processed {progress_note[0:100]}")
 
                 gmail_message.get_labelNames(gmail_messages.folder_labels)
                 progress.console.print(
@@ -184,6 +194,12 @@ def main():
         twitter_v02.send_a_DM(message=tweet)
 
     log.info("done.")
+
+    # try:
+    #     print(1 / 0)
+    # # except Exception:
+    # except ArithmeticError:
+    #     log.exception("unable print!")
 
 
 # --------------------------------------------------

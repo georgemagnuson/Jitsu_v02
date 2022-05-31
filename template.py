@@ -57,6 +57,10 @@ def get_args():
     parser.add_argument("-o", "--on", help="A boolean flag", action="store_true")
 
     parser.add_argument(
+        "-t", "--test", help="turn on non-destructive mode", action="store_true"
+    )
+
+    parser.add_argument(
         "-l",
         "--logfile",
         help="Location of log file",
@@ -79,8 +83,11 @@ def main():
     int_arg = args.int
     file_arg = args.file
     flag_arg = args.on
+    test_mode = args.test
     logfile_arg = args.logfile
     verbose_arg = args.verbose
+    if logfile_arg and verbose_arg == 0:
+        verbose_arg = 1
     pos_arg = args.positional
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
@@ -92,7 +99,6 @@ def main():
         datefmt="[%X]",
         handlers=[
             RichHandler(
-                console=Console(file=logfile_arg),
                 rich_tracebacks=True,
                 tracebacks_show_locals=True,
                 markup=True,
@@ -100,21 +106,39 @@ def main():
         ],
     )
 
-    log = logging.getLogger(__name__)
-    rich_log = RichHandler(
-        console=Console(file=logfile_arg),
-        rich_tracebacks=True,
-        tracebacks_show_locals=True,
-        markup=True,
-    )
-    log.addHandler(rich_log)
-
     if logfile_arg:
-        file_log = logging.getLogger("rotate file")
-        file_handler = logging.handlers.RotatingFileHandler(
-            filename=logfile_arg.name, mode="a", maxBytes=5000000, backupCount=1
+        file_handler = RotatingFileHandler(
+            filename=logfile_arg.name,
+            mode="a",
+            maxBytes=5000000,
+            backupCount=1,
         )
-        file_log.addHandler(file_handler)
+        console_file_handler = RichHandler(
+            console=Console(file=logfile_arg),
+            rich_tracebacks=True,
+            tracebacks_show_locals=True,
+            markup=True,
+        )
+
+    log = logging.getLogger(__name__)
+
+    if verbose_arg > 0 and logfile_arg:
+        log.addHandler(console_file_handler)
+
+    if verbose_arg == 0 and logfile_arg:
+        log.addHandler(file_handler)
+
+    log.info("********************\n")
+
+    if test_mode:
+        log.info("test mode - non-destructive on")
+
+    # if logfile_arg:
+    #     file_log = logging.getLogger("rotate file")
+    #     file_handler = logging.handlers.RotatingFileHandler(
+    #         filename=logfile_arg.name, mode="a", maxBytes=5000000, backupCount=1
+    #     )
+    #     file_log.addHandler(file_handler)
 
     log.info("Hello, World!")
     # log.info(f'str_arg     = "{str_arg}"')
@@ -133,10 +157,10 @@ def main():
     # log.error("error message")
     # log.critical("critical message")
     #
-    # try:
-    #     print(1 / 0)
-    # except Exception:
-    #     log.exception("unable print!")
+    try:
+        print(1 / 0)
+    except Exception:
+        log.exception("unable print!")
 
 
 # --------------------------------------------------
