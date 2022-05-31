@@ -44,6 +44,7 @@ def get_args():
         help="Location of log file",
         metavar="FILE",
         type=argparse.FileType("a"),
+        # default=os.path.splitext(os.path.basename(__file__))[0] + ".log",
         default=None,
     )
 
@@ -71,6 +72,7 @@ def main():
     args = get_args()
     test_mode = args.test
     logfile_arg = args.logfile
+    # default=os.path.splitext(os.path.basename(__file__))[0] + ".log",
     verbose_arg = args.verbose
     if logfile_arg and verbose_arg == 0:
         verbose_arg = 1
