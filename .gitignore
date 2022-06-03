@@ -1,4 +1,5 @@
 .direnv
+.envrc
 .idea
 __pycache__
 .pytest_cache
