@@ -135,7 +135,7 @@ def main():
     message_count = len(gmail_messages.messages)
     log.info(f"message count: {message_count}")
     tweet = f"{os.path.basename(__file__)}: {message_count} new message"
-    if message_count > 1:
+    if message_count > 0:
         gmail_messages.get_labels_list()
         console.log("creating database and tables")
         create_db_and_tables()
