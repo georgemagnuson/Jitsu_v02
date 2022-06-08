@@ -115,7 +115,7 @@ def main():
     if verbose_arg == 0 and logfile_arg:
         log.addHandler(file_handler)
 
-    log.info("********************\n")
+    log.info("\n********************\n")
 
     if test_mode:
         log.info("test mode - non-destructive on")
