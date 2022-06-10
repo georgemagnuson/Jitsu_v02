@@ -1,2 +1,55 @@
 [20:21:38] INFO     Hello, World!                                                                                                                  template.py:112
 [20:29:24] INFO     Hello, World!                                                                                                              template.py:112
+[06/09/22 20:46:08] INFO     ********************                template.py:139
+                                                                                
+                    INFO     Hello, World!                       template.py:151
+                    ERROR    unable print!                       template.py:171
+                             ╭─ Traceback (most recent call la─╮                
+                             │ /Users/georgemagnuson/Documents │                
+                             │ /GitHub/Jitsu_v02/template.py:1 │                
+                             │ 69 in main                      │                
+                             │                                 │                
+                             │   166 │   # log.critical("criti │                
+                             │   167 │   #                     │                
+                             │   168 │   try:                  │                
+                             │ ❱ 169 │   │   print(1 / 0)      │                
+                             │   170 │   except Exception:     │                
+                             │   171 │   │   log.exception("un │                
+                             │   172                           │                
+                             │                                 │                
+                             │ ╭────────── locals ───────────╮ │                
+                             │ │       args = Namespace(pos… │ │                
+                             │ │              arg='', int=0, │ │                
+                             │ │              file=None,     │ │                
+                             │ │              on=False,      │ │                
+                             │ │              test=False,    │ │                
+                             │ │              logfile=<_io.… │ │                
+                             │ │              name='test.lo… │ │                
+                             │ │              mode='a'       │ │                
+                             │ │              encoding='UTF… │ │                
+                             │ │              verbose=0)     │ │                
+                             │ │ console_fil… <RichHandler   │ │                
+                             │ │            = (NOTSET)>      │ │                
+                             │ │   file_arg = None           │ │                
+                             │ │ file_handler <RotatingFile… │ │                
+                             │ │            = /Users/george… │ │                
+                             │ │              (NOTSET)>      │ │                
+                             │ │   flag_arg = False          │ │                
+                             │ │    int_arg = 0              │ │                
+                             │ │      level = 20             │ │                
+                             │ │     levels = [30, 20, 10]   │ │                
+                             │ │        log = <Logger        │ │                
+                             │ │              __main__       │ │                
+                             │ │              (INFO)>        │ │                
+                             │ │  logfile_arg <_io.TextIOWr… │ │                
+                             │ │            = name='test.lo… │ │                
+                             │ │              mode='a'       │ │                
+                             │ │              encoding='UTF… │ │                
+                             │ │    pos_arg = 'just-a-posit… │ │                
+                             │ │    str_arg = ''             │ │                
+                             │ │  test_mode = False          │ │                
+                             │ │  verbose_arg 1              │ │                
+                             │ │            =                │ │                
+                             │ ╰─────────────────────────────╯ │                
+                             ╰─────────────────────────────────╯                
+                             ZeroDivisionError: division by zero                
