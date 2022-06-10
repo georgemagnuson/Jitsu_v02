@@ -75,7 +75,7 @@ class Message(base.BaseWithUUID, table=True):
 
 
 def create_message(
-    mail_message_id: UUID4,
+    mail_message_id: str,
     mail_message_date: date,
     mail_message_from: str,
     mail_message_to: str,
