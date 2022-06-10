@@ -93,6 +93,9 @@ def main():
         ],
     )
 
+    console_file_handler = None
+    file_handler = None
+
     if logfile_arg:
         file_handler = RotatingFileHandler(
             filename=logfile_arg.name,
