@@ -19,11 +19,18 @@ from rich.logging import RichHandler
 
 # GMail API
 # pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
-from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+# from google.auth.transport.requests import Request
+# from google_auth_oauthlib.flow import InstalledAppFlow
+# from googleapiclient.discovery import build
 from rich.console import Console
 from rich.progress import Progress
+
+# post 2022-06-10 Google changes to GMailAPI
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 # import pg8000
 
@@ -246,6 +253,7 @@ class MailList:
     list_config_init_db_section: str
     list_config_init_gmail: dict
     list_service: str
+    token_json_path: str
     pickle_path: str
     credentials_path: str
     scopes: str
@@ -265,6 +273,8 @@ class MailList:
         if parser.has_section(self.list_config_init_gmail_section):
             params = parser.items(self.list_config_init_gmail_section)
             for param in params:
+                if param[0] == "token_json_path":
+                    self.pickle_path = param[1]
                 if param[0] == "pickle_path":
                     self.pickle_path = param[1]
                 elif param[0] == "credentials_path":
@@ -292,9 +302,13 @@ class MailList:
         # ic(os.path.curdir)
         # ic(gmail['pickle_path'])
         # ic(os.path.exists(gmail['pickle_path']))
-        if os.path.exists(self.pickle_path):
-            with open(self.pickle_path, "rb") as token:
-                creds = pickle.load(token)
+        # as of 202-06-10 Google changed to token.json
+        if os.path.exists(self.token_json_path):
+            # with open(self.pickle_path, "rb") as token:
+            # creds = pickle.load(token)
+            creds = Credentials.from_authorized_user_file(
+                self.token_json_path, self.scopes
+            )
         # if there are no (valid) credentials available, let the user log
         # in.
         if not creds or not creds.valid:
@@ -306,9 +320,16 @@ class MailList:
                 )
                 creds = flow.run_local_server(port=0)
             # save the credentials for the next run
-            with open(self.pickle_path, "wb") as token:
-                pickle.dump(creds, token)
-        self.list_service = build("gmail", "v1", credentials=creds)
+            # with open(self.pickle_path, "wb") as token:
+            #     pickle.dump(creds, token)
+            with open(self.token_json_path, "w") as token:
+                token.write(creds.to_json())
+        try:
+            self.list_service = build("gmail", "v1", credentials=creds)
+        except HttpError as error:
+            # TODO(developer) - Handle errors from gmail API.
+            print(f"An error occurred: {error}")
+
         return
 
     def get_labels_list(self):
