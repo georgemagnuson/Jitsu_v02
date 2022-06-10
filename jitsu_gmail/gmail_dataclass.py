@@ -274,7 +274,7 @@ class MailList:
             params = parser.items(self.list_config_init_gmail_section)
             for param in params:
                 if param[0] == "token_json_path":
-                    self.pickle_path = param[1]
+                    self.token_json_path = param[1]
                 if param[0] == "pickle_path":
                     self.pickle_path = param[1]
                 elif param[0] == "credentials_path":
