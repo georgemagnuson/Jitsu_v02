@@ -169,8 +169,8 @@ def main():
     #
     try:
         print(1 / 0)
-    except Exception:
-        log.exception("unable print!")
+    except Exception as error:
+        log.exception(f"error: {error}")
 
 
 # --------------------------------------------------
