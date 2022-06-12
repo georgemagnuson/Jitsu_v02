@@ -148,7 +148,7 @@ def main():
             for message_id in gmail_messages.messages:
                 progress.console.rule()
                 gmail_message = jitsu_gmail.gmail_dataclass.GMailMessage(
-                    gmail_messages.list_service, message_id["id"]
+                    gmail_messages.service, message_id["id"]
                 )
 
                 progress_note = (

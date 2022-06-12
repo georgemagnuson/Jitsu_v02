@@ -16,6 +16,7 @@ from datetime import datetime
 from email import message_from_bytes, policy
 import logging
 from rich.logging import RichHandler
+from mail_authentication import authenticate
 
 # GMail API
 # pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
@@ -252,9 +253,9 @@ class MailList:
     list_config_init_gmail_section: str
     list_config_init_db_section: str
     list_config_init_gmail: dict
-    list_service: str
+    service: str
     token_json_path: str
-    pickle_path: str
+    # pickle_path: str
     credentials_path: str
     scopes: str
     our_email: str
@@ -275,8 +276,8 @@ class MailList:
             for param in params:
                 if param[0] == "token_json_path":
                     self.token_json_path = param[1]
-                if param[0] == "pickle_path":
-                    self.pickle_path = param[1]
+                # if param[0] == "pickle_path":
+                #     self.pickle_path = param[1]
                 elif param[0] == "credentials_path":
                     self.credentials_path = param[1]
                 elif param[0] == "scopes":
@@ -291,51 +292,17 @@ class MailList:
                     self.list_config_init_gmail_section, self.list_config_init_filename
                 )
             )
-        self.gmail_authenticate()
-        return
 
-    def gmail_authenticate(self):
-        """authenticates token and credentials for gmail access"""
-        creds = None
-        # the file token.pickle stores the user's access and refresh tokens, and is
-        # created automatically when the authorization flow completes for the first time
-        # ic(os.path.curdir)
-        # ic(gmail['pickle_path'])
-        # ic(os.path.exists(gmail['pickle_path']))
-        # as of 202-06-10 Google changed to token.json
-        if os.path.exists(self.token_json_path):
-            # with open(self.pickle_path, "rb") as token:
-            # creds = pickle.load(token)
-            creds = Credentials.from_authorized_user_file(
-                self.token_json_path, self.scopes
-            )
-        # if there are no (valid) credentials available, let the user log
-        # in.
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    self.credentials_path, self.scopes
-                )
-                creds = flow.run_local_server(port=0)
-            # save the credentials for the next run
-            # with open(self.pickle_path, "wb") as token:
-            #     pickle.dump(creds, token)
-            with open(self.token_json_path, "w") as token:
-                token.write(creds.to_json())
-        try:
-            self.list_service = build("gmail", "v1", credentials=creds)
-        except HttpError as error:
-            # TODO(developer) - Handle errors from gmail API.
-            print(f"An error occurred: {error}")
-
+        # """authenticates token and credentials for gmail access"""
+        self.service = authenticate(
+            self.token_json_path, self.credentials_path, self.scopes
+        )
         return
 
     def get_labels_list(self):
         """get a list of folders"""
         # GET https://gmail.googleapis.com/gmail/v1/users/{userId}/labels
-        label_dict = self.list_service.users().labels().list(userId="me").execute()
+        label_dict = self.service.users().labels().list(userId="me").execute()
         label_list = label_dict["labels"]
         # console = Console()
         self.folder_labels = {}
@@ -354,10 +321,7 @@ class MailList:
             "[bold green]Loading messages...", spinner="point"
         ) as status:
             result = (
-                self.list_service.users()
-                .messages()
-                .list(userId="me", q=query)
-                .execute()
+                self.service.users().messages().list(userId="me", q=query).execute()
             )
             if "messages" in result:
                 # progress.console.print('Extending messages')
@@ -368,7 +332,7 @@ class MailList:
                 # progress.console.print('getting nextPage of messages')
                 page_token = result["nextPageToken"]
                 result = (
-                    self.list_service.users()
+                    self.service.users()
                     .messages()
                     .list(userId="me", q=query, pageToken=page_token)
                     .execute()
