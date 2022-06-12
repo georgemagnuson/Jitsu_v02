@@ -16,7 +16,7 @@ from datetime import datetime
 from email import message_from_bytes, policy
 import logging
 from rich.logging import RichHandler
-from mail_authentication import authenticate
+from jitsu_gmail.mail_authentication import authenticate
 
 # GMail API
 # pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
