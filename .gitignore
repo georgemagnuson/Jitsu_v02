@@ -3,9 +3,8 @@
 .idea/
 __pycache__
 .pytest_cache
-#token.pickle
+token.json
 *.log
-#*.pickle
 
 ### Python template
 # Byte-compiled / optimized / DLL files
