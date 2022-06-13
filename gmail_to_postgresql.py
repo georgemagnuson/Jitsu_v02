@@ -7,6 +7,7 @@ Purpose: went back to jitsu_gmail
 
 import argparse
 import os
+from socket import gethostname
 
 import logging
 from rich.progress import Progress
@@ -72,7 +73,8 @@ def main():
     args = get_args()
     test_mode = args.test
     logfile_arg = args.logfile
-    # default=os.path.splitext(os.path.basename(__file__))[0] + ".log",
+    default_log_file = (os.path.splitext(os.path.basename(__file__))[0] + ".log",)
+    hostname = gethostname()
     verbose_arg = args.verbose
     if logfile_arg and verbose_arg == 0:
         verbose_arg = 1
@@ -135,14 +137,15 @@ def main():
             "collect messages from SupplierMail/InvoicesNew into gmail_messages mail list"
         )
         gmail_messages.get_folder_messages("SupplierMail/InvoicesNew")
+        message_processed_count = 0
         message_count = len(gmail_messages.messages)
         log.info(f"message count: {message_count}")
-        tweet = f"{os.path.basename(__file__)}: {message_count} new message"
+        # tweet = f"{os.path.basename(__file__)}: {message_count} new message"
         if message_count > 0:
             gmail_messages.get_labels_list()
             console.log("creating database and tables")
             create_db_and_tables()
-            tweet = f"{os.path.basename(__file__)}: {message_count} new messages"
+
             with Progress() as progress:
                 task = progress.add_task("Processing GMail", total=message_count)
                 for message_id in gmail_messages.messages:
@@ -186,6 +189,7 @@ def main():
                         gmail_message.message_label_add("Label_6569528190372695776")
                         gmail_message.message_label_remove("Label_6976860208836301729")
                         log.info(f"processed {progress_note[0:100]}")
+                        message_processed_count += 1
 
                     gmail_message.get_labelNames(gmail_messages.folder_labels)
                     progress.console.print(
@@ -194,7 +198,8 @@ def main():
 
                     progress.advance(task)
 
-        log.info(f"{tweet}")
+        tweet = f"{os.path.basename(__file__)}: {message_processed_count}/{message_count} new messages processed -{hostname[0]} "
+        log.info(f"tweet: {tweet}")
         if not test_mode:
             twitter_v02.send_a_DM(message=tweet)
 
