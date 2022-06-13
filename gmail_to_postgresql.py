@@ -73,11 +73,20 @@ def main():
     args = get_args()
     test_mode = args.test
     logfile_arg = args.logfile
-    default_log_file = (os.path.splitext(os.path.basename(__file__))[0] + ".log",)
-    hostname = gethostname()
+    # get from command line argument, unless test_mode is activated
+    hostname = gethostname()  # used for tweet sender
     verbose_arg = args.verbose
     if logfile_arg and verbose_arg == 0:
         verbose_arg = 1
+    if test_mode and verbose_arg == 0 and logfile_arg is None:
+        verbose_arg = 1
+        logfile_arg = open(
+            os.path.dirname(__file__)
+            + "/"
+            + os.path.splitext(os.path.basename(__file__))[0]
+            + ".log",
+            "a",
+        )
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     level = levels[min(verbose_arg, len(levels) - 1)]  # cap to last level index
@@ -204,8 +213,11 @@ def main():
             twitter_v02.send_a_DM(message=tweet)
 
         log.info("done.")
+        if test_mode and logfile_arg:
+            logfile_arg.close()
 
     except Exception as error:
+        # catch all errors
         log.exception(f"error: {error}")
 
 
