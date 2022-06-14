@@ -7,6 +7,8 @@ Purpose: Rock the Casbah
 
 import argparse
 import logging
+import os
+from socket import gethostname
 from logging.handlers import RotatingFileHandler
 
 from rich import print
@@ -17,6 +19,7 @@ from rich.logging import RichHandler
 
 # console = Console()
 # --------------------------------------------------
+import twitter_v02
 
 
 def get_args():
@@ -84,17 +87,30 @@ def get_args():
 def main():
     """Make a jazz noise here"""
 
-    args = get_args()
+    # console = Console()
+    hostname = gethostname()  # used for tweet sender
+    args = get_args()  # get command line arguments
     str_arg = args.arg
     int_arg = args.int
     file_arg = args.file
     flag_arg = args.on
+    pos_arg = args.positional
     test_mode = args.test
-    logfile_arg = args.logfile
+    logfile_arg = (
+        args.logfile
+    )  # get from command line argument, unless test_mode is activated
     verbose_arg = args.verbose
     if logfile_arg and verbose_arg == 0:
         verbose_arg = 1
-    pos_arg = args.positional
+    if test_mode and verbose_arg == 0 and logfile_arg is None:
+        verbose_arg = 1
+        logfile_arg = open(
+            os.path.dirname(__file__)
+            + "/"
+            + os.path.splitext(os.path.basename(__file__))[0]
+            + ".log",
+            "a",
+        )
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     level = levels[min(verbose_arg, len(levels) - 1)]  # cap to last level index
@@ -111,6 +127,9 @@ def main():
             ),
         ],
     )
+
+    console_file_handler = None
+    file_handler = None
 
     if logfile_arg:
         file_handler = RotatingFileHandler(
@@ -138,7 +157,7 @@ def main():
     if verbose_arg == 0 and logfile_arg:
         log.addHandler(file_handler)
 
-    log.info("********************\n")
+    log.info("\n********************\n")
 
     if test_mode:
         log.info("test mode - non-destructive on")
@@ -150,7 +169,6 @@ def main():
     #     )
     #     file_log.addHandler(file_handler)
 
-    log.info("Hello, World!")
     # log.info(f'str_arg     = "{str_arg}"')
     # log.info(f'int_arg     = "{int_arg}"')
     # log.info('file_arg     = "{}"'.format(file_arg.name if file_arg else ""))
@@ -168,9 +186,20 @@ def main():
     # log.critical("critical message")
     #
     try:
-        print(1 / 0)
+        log.info("Hello, World!")
+        # do stuff here
+        log.info("done.")
+
+        tweet = f"{os.path.basename(__file__)}: message progress -{hostname[0]} "
+        log.info(f"tweet: {tweet}")
+        if not test_mode:
+            twitter_v02.send_a_DM(message=tweet)
+
     except Exception as error:
         log.exception(f"error: {error}")
+
+    if test_mode and logfile_arg:
+        logfile_arg.close()
 
 
 # --------------------------------------------------

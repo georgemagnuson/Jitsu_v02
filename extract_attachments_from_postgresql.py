@@ -20,6 +20,8 @@ sample/s:
 
 import argparse
 import logging
+import os
+from _socket import gethostname
 from logging.handlers import RotatingFileHandler
 
 from rich import print
@@ -27,7 +29,9 @@ from rich.pretty import Pretty
 from rich import inspect
 from rich.console import Console
 from rich.logging import RichHandler
+import pdfkit
 
+import twitter_v02
 from model import message
 
 
@@ -43,7 +47,7 @@ def get_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("positional", metavar="str", help="message id")
+    parser.add_argument("positional", metavar="str", help="message id number")
 
     # parser.add_argument(
     #     "-a",
@@ -95,18 +99,27 @@ def get_args():
 # --------------------------------------------------
 def main():
     """Make a jazz noise here"""
+    hostname = gethostname()  # used for tweet sender
+    # console = Console()
 
     args = get_args()
-    # str_arg = args.arg
-    # int_arg = args.int
-    # file_arg = args.file
-    # flag_arg = args.on
+    pos_arg = args.positional
     test_mode = args.test
-    logfile_arg = args.logfile
+    logfile_arg = (
+        args.logfile
+    )  # get from command line argument, unless test_mode is activated
     verbose_arg = args.verbose
     if logfile_arg and verbose_arg == 0:
         verbose_arg = 1
-    pos_arg = args.positional
+    if test_mode and verbose_arg == 0 and logfile_arg is None:
+        verbose_arg = 1
+        logfile_arg = open(
+            os.path.dirname(__file__)
+            + "/"
+            + os.path.splitext(os.path.basename(__file__))[0]
+            + ".log",
+            "a",
+        )
 
     levels = [logging.WARNING, logging.INFO, logging.DEBUG]
     level = levels[min(verbose_arg, len(levels) - 1)]  # cap to last level index
@@ -187,15 +200,33 @@ def main():
 
         for one_arg in pos_arg.split(" "):
             results = message.select_first_message(one_arg)
-            log.info("results.gmail_message_id: " + results.gmail_message_id)
+            log.info(f"results.gmail_message_id: {results.gmail_message_id}")
             if results:
                 attachments = message.message_extract_attachments(results.message_raw)
                 if attachments:
+                    for key in attachments:
+                        filename = key
+                        log.info(f"   attachment : {filename=}")
                     message.save_attachment_to_dir(
                         dir_arg=dir_arg, attachments=attachments
                     )
-    except Exception:
-        log.exception("unable print!")
+                else:
+                    # email_object = message.email_obj_from_raw_mail(results.message_raw)
+                    # body = email_object.get_body()
+                    html = message.message_extract_body_as_html(results.message_raw)
+                    filename = f"{one_arg}.pdf"
+                    pdfkit.from_string(html, f"{dir_arg}/{filename}")
+                    log.info(f"   attachment : {filename=}")
+
+        log.info("done.")
+
+        tweet = f"{os.path.basename(__file__)}: message progress here -{hostname[0]} "
+        log.info(f"tweet: {tweet}")
+        if not test_mode:
+            twitter_v02.send_a_DM(message=tweet)
+
+    except Exception as error:
+        log.exception(f"error : {error}")
 
 
 # --------------------------------------------------

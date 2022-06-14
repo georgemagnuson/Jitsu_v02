@@ -209,6 +209,15 @@ def delete_attachment(filepath):
         console.log(f"[bright_yellow]OSError: {error}")
 
 
+def message_extract_body_as_html(raw_email):
+    """extracts all format attachments from message"""
+    html = ""
+    email_obj = email_obj_from_raw_mail(raw_email)
+    body = email_obj.get_body()
+    html = body.get_payload()
+    return html
+
+
 # ┌───────────────────────────────────────────┐
 # │     Multiple MESSAGE related functions    │
 # └───────────────────────────────────────────┘
