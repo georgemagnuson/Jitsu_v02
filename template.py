@@ -128,8 +128,8 @@ def main():
         ],
     )
 
-    console_file_handler = None
-    file_handler = None
+    console_file_handler = RichHandler()
+    file_handler = RotatingFileHandler(filename='')
 
     if logfile_arg:
         file_handler = RotatingFileHandler(
@@ -162,13 +162,6 @@ def main():
     if test_mode:
         log.info("test mode - non-destructive on")
 
-    # if logfile_arg:
-    #     file_log = logging.getLogger("rotate file")
-    #     file_handler = logging.handlers.RotatingFileHandler(
-    #         filename=logfile_arg.name, mode="a", maxBytes=5000000, backupCount=1
-    #     )
-    #     file_log.addHandler(file_handler)
-
     # log.info(f'str_arg     = "{str_arg}"')
     # log.info(f'int_arg     = "{int_arg}"')
     # log.info('file_arg     = "{}"'.format(file_arg.name if file_arg else ""))
@@ -185,6 +178,7 @@ def main():
     # log.error("error message")
     # log.critical("critical message")
     #
+
     try:
         log.info("Hello, World!")
         # do stuff here
