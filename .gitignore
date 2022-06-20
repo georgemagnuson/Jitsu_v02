@@ -3,7 +3,7 @@
 .idea/
 __pycache__
 .pytest_cache
-token.json
+#token.json
 #token.pickle
 *.log
 #*.pickle
