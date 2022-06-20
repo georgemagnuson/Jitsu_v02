@@ -91,34 +91,18 @@
                              creditcontrol@foodstuffs-si.co.nz                                                                                                   
                     INFO     tweet: gmail_to_postgresql.py: 0/4 new messages processed -M                                              gmail_to_postgresql.py:211
                     INFO     done.                                                                                                     gmail_to_postgresql.py:215
-[06/20/22 13:55:54] INFO                                                                                                               gmail_to_postgresql.py:132
-                             ********************                                                                                                                
-                                                                                                                                                                 
-                    INFO     test mode - non-destructive on                                                                            gmail_to_postgresql.py:135
-                    INFO     initializing gmail_messages mail list object                                                              gmail_to_postgresql.py:142
-[06/20/22 13:56:33] INFO                                                                                                               gmail_to_postgresql.py:132
-                             ********************                                                                                                                
-                                                                                                                                                                 
-                    INFO     test mode - non-destructive on                                                                            gmail_to_postgresql.py:135
-                    INFO     initializing gmail_messages mail list object                                                              gmail_to_postgresql.py:142
-[06/20/22 13:57:19] INFO                                                                                                               gmail_to_postgresql.py:132
-                             ********************                                                                                                                
-                                                                                                                                                                 
-                    INFO     test mode - non-destructive on                                                                            gmail_to_postgresql.py:135
-                    INFO     initializing gmail_messages mail list object                                                              gmail_to_postgresql.py:142
-[06/20/22 13:57:28] INFO     collect messages from SupplierMail/InvoicesNew into gmail_messages mail list                              gmail_to_postgresql.py:145
-                    INFO     message count: 6                                                                                          gmail_to_postgresql.py:151
-[06/20/22 13:57:35] INFO     processing message_id: 1817e5faa208e328: Jun 20 2022 Self Service Invoice 4862289                         gmail_to_postgresql.py:178
-                             creditcontrol@foodstuffs-si.co.nz                                                                                                   
-[06/20/22 13:57:37] INFO     processing message_id: 1817df0c107b4243: Jun 19 2022 Invoice 412980 from Blue Water Products Ltd for The  gmail_to_postgresql.py:178
-                             Jitsu Shirley Young <Shirley@blueh2o.co.nz>                                                                                         
-[06/20/22 13:57:39] INFO     processing message_id: 1817da9ef23e714a: Jun 20 2022 Sales - Tax Invoice SI02159058 From Kaans - DO NOT   gmail_to_postgresql.py:178
-                             REPLY <auto-send@kaans.co.nz>                                                                                                       
-[06/20/22 13:57:40] INFO     processing message_id: 1817cbc17829f74b: Jun 19 2022 Your Data Export - Bidvest Invoices                  gmail_to_postgresql.py:178
-                             noreply@mybidfood.co.nz                                                                                                             
-[06/20/22 13:57:42] INFO     processing message_id: 18178bd28a1600ec: Jun 19 2022 Sales - Credit Memo SCM000799040 From Kaans - DO NOT gmail_to_postgresql.py:178
-                             REPLY <auto-send@kaans.co.nz>                                                                                                       
-[06/20/22 13:57:44] INFO     processing message_id: 18173e169a9d3de9: Jun 18 2022 Sales - Tax Invoice SI02158269 From Kaans - DO NOT   gmail_to_postgresql.py:178
-                             REPLY <auto-send@kaans.co.nz>                                                                                                       
-                    INFO     tweet: gmail_to_postgresql.py: 0/6 new messages processed -M                                              gmail_to_postgresql.py:211
-                    INFO     done.                                                                                                     gmail_to_postgresql.py:215
+[06/13/22 20:09:19] INFO                                                                                                                                                gmail_to_postgresql.py:132
+                             ********************                                                                                                                                                 
+                                                                                                                                                                                                  
+[06/13/22 20:09:20] INFO     test mode - non-destructive on                                                                                                             gmail_to_postgresql.py:135
+                    INFO     initializing gmail_messages mail list object                                                                                               gmail_to_postgresql.py:142
+                    INFO     collect messages from SupplierMail/InvoicesNew into gmail_messages mail list                                                               gmail_to_postgresql.py:145
+                    INFO     message count: 4                                                                                                                           gmail_to_postgresql.py:151
+[06/13/22 20:09:26] INFO     processing message_id: 1815beeddb12e16c: Jun 13 2022 CUST-702466-THE JITSU Bidfood Limited <accounts.dn@bidfood.co.nz>                     gmail_to_postgresql.py:178
+[06/13/22 20:09:27] INFO     processing message_id: 1815b33f3b78c65c: Jun 12 2022 Your order has been confirmed (Ref: 574733678) Coca-Cola Europacific Partners         gmail_to_postgresql.py:178
+                             <cca@e.ccamatil.co.nz>                                                                                                                                               
+[06/13/22 20:09:32] INFO     processing message_id: 1815ab7339b4c4e3: Jun 13 2022 Customer Statement for THE JITSU as at 13/06/22 12:49:30.598 pm From Kaans - DO NOT   gmail_to_postgresql.py:178
+                             REPLY <auto-send@kaans.co.nz>                                                                                                                                        
+[06/13/22 20:09:34] INFO     processing message_id: 1815a5d225b14017: Jun 13 2022 Self Service Invoice 4856286 creditcontrol@foodstuffs-si.co.nz                        gmail_to_postgresql.py:178
+                    INFO     tweet: gmail_to_postgresql.py: 0/4 new messages processed -u                                                                               gmail_to_postgresql.py:211
+                    INFO     done.                                                                                                                                      gmail_to_postgresql.py:215
